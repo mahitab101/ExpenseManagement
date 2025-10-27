@@ -19,7 +19,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 });
 
 // Identity
-builder.Services.AddIdentity<ApplicationUser,IdentityRole>().AddEntityFrameworkStores<ApplicationDbContext>();
+builder.Services.AddIdentity<ApplicationUser,IdentityRole<Guid>>().AddEntityFrameworkStores<ApplicationDbContext>();
 
 var app = builder.Build();
 
