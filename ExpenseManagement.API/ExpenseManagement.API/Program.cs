@@ -1,5 +1,8 @@
+using ExpenseManagement.API.Configuration;
+using ExpenseManagement.API.Contracts;
 using ExpenseManagement.API.Data;
 using ExpenseManagement.API.Models;
+using ExpenseManagement.API.Repositories;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
@@ -26,6 +29,13 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole<Guid>>().AddEntityFra
 builder.Host.UseSerilog((context, configuration) =>
 configuration.ReadFrom.Configuration(context.Configuration)
 );
+//mapper configuration
+builder.Services.AddAutoMapper(cfg =>
+{
+    cfg.AddProfile(new MapperConfig());
+});
+
+builder.Services.AddScoped<IUserRepository, UserRepository>();
 
 var app = builder.Build();
 
