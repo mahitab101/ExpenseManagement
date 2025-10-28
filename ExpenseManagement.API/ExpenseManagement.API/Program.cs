@@ -2,6 +2,7 @@ using ExpenseManagement.API.Data;
 using ExpenseManagement.API.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -19,7 +20,12 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 });
 
 // Identity
-builder.Services.AddIdentity<ApplicationUser,IdentityRole<Guid>>().AddEntityFrameworkStores<ApplicationDbContext>();
+builder.Services.AddIdentity<ApplicationUser, IdentityRole<Guid>>().AddEntityFrameworkStores<ApplicationDbContext>();
+
+//serilog
+builder.Host.UseSerilog((context, configuration) =>
+configuration.ReadFrom.Configuration(context.Configuration)
+);
 
 var app = builder.Build();
 

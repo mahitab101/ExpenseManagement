@@ -3,8 +3,8 @@
   "WorkspaceRootPath": "C:\\Users\\mahitabmohamad\\Desktop\\New folder\\My Documents\\API Projects\\Expense Management System\\ExpenseManagement.API\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\mahitabmohamad\\Desktop\\New folder\\My Documents\\API Projects\\Expense Management System\\ExpenseManagement.API\\ExpenseManagement.API\\Migrations\\20251027160549_initMigration.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:ExpenseManagement.API\\Migrations\\20251027160549_initMigration.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{D5D7264F-C695-45AC-8C02-FC7C395B421E}|ExpenseManagement.API\\ExpenseManagement.API.csproj|c:\\users\\mahitabmohamad\\desktop\\new folder\\my documents\\api projects\\expense management system\\expensemanagement.api\\expensemanagement.api\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
+      "RelativeMoniker": "D:0:0:{D5D7264F-C695-45AC-8C02-FC7C395B421E}|ExpenseManagement.API\\ExpenseManagement.API.csproj|solutionrelative:expensemanagement.api\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{D5D7264F-C695-45AC-8C02-FC7C395B421E}|ExpenseManagement.API\\ExpenseManagement.API.csproj|c:\\users\\mahitabmohamad\\desktop\\new folder\\my documents\\api projects\\expense management system\\expensemanagement.api\\expensemanagement.api\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
@@ -13,10 +13,6 @@
     {
       "AbsoluteMoniker": "D:0:0:{D5D7264F-C695-45AC-8C02-FC7C395B421E}|ExpenseManagement.API\\ExpenseManagement.API.csproj|c:\\users\\mahitabmohamad\\desktop\\new folder\\my documents\\api projects\\expense management system\\expensemanagement.api\\expensemanagement.api\\data\\applicationdbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{D5D7264F-C695-45AC-8C02-FC7C395B421E}|ExpenseManagement.API\\ExpenseManagement.API.csproj|solutionrelative:expensemanagement.api\\data\\applicationdbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{D5D7264F-C695-45AC-8C02-FC7C395B421E}|ExpenseManagement.API\\ExpenseManagement.API.csproj|c:\\users\\mahitabmohamad\\desktop\\new folder\\my documents\\api projects\\expense management system\\expensemanagement.api\\expensemanagement.api\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
-      "RelativeMoniker": "D:0:0:{D5D7264F-C695-45AC-8C02-FC7C395B421E}|ExpenseManagement.API\\ExpenseManagement.API.csproj|solutionrelative:expensemanagement.api\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{D5D7264F-C695-45AC-8C02-FC7C395B421E}|ExpenseManagement.API\\ExpenseManagement.API.csproj|c:\\users\\mahitabmohamad\\desktop\\new folder\\my documents\\api projects\\expense management system\\expensemanagement.api\\expensemanagement.api\\models\\category.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
@@ -43,25 +39,12 @@
             {
               "$type": "Document",
               "DocumentIndex": 0,
-              "Title": "20251027160549_initMigration.cs",
-              "DocumentMoniker": "C:\\Users\\mahitabmohamad\\Desktop\\New folder\\My Documents\\API Projects\\Expense Management System\\ExpenseManagement.API\\ExpenseManagement.API\\Migrations\\20251027160549_initMigration.cs",
-              "RelativeDocumentMoniker": "ExpenseManagement.API\\Migrations\\20251027160549_initMigration.cs",
-              "ToolTip": "C:\\Users\\mahitabmohamad\\Desktop\\New folder\\My Documents\\API Projects\\Expense Management System\\ExpenseManagement.API\\ExpenseManagement.API\\Migrations\\20251027160549_initMigration.cs",
-              "RelativeToolTip": "ExpenseManagement.API\\Migrations\\20251027160549_initMigration.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-10-27T16:05:49.751Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 3,
               "Title": "appsettings.json",
               "DocumentMoniker": "C:\\Users\\mahitabmohamad\\Desktop\\New folder\\My Documents\\API Projects\\Expense Management System\\ExpenseManagement.API\\ExpenseManagement.API\\appsettings.json",
               "RelativeDocumentMoniker": "ExpenseManagement.API\\appsettings.json",
               "ToolTip": "C:\\Users\\mahitabmohamad\\Desktop\\New folder\\My Documents\\API Projects\\Expense Management System\\ExpenseManagement.API\\ExpenseManagement.API\\appsettings.json",
               "RelativeToolTip": "ExpenseManagement.API\\appsettings.json",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAIAAAAWAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAwAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
               "WhenOpened": "2025-10-27T15:45:14.217Z",
               "EditorCaption": ""
@@ -76,8 +59,7 @@
               "RelativeToolTip": "ExpenseManagement.API\\Program.cs",
               "ViewState": "AgIAABAAAAAAAAAAAAAYwBUAAAA+AAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-10-27T15:30:49.55Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-10-27T15:30:49.55Z"
             },
             {
               "$type": "Document",
@@ -89,12 +71,11 @@
               "RelativeToolTip": "ExpenseManagement.API\\Data\\ApplicationDbContext.cs",
               "ViewState": "AgIAABwAAAAAAAAAAAAYwCcAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-10-27T09:35:01.88Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-10-27T09:35:01.88Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 6,
+              "DocumentIndex": 5,
               "Title": "Expense.cs",
               "DocumentMoniker": "C:\\Users\\mahitabmohamad\\Desktop\\New folder\\My Documents\\API Projects\\Expense Management System\\ExpenseManagement.API\\ExpenseManagement.API\\Models\\Expense.cs",
               "RelativeDocumentMoniker": "ExpenseManagement.API\\Models\\Expense.cs",
@@ -102,12 +83,11 @@
               "RelativeToolTip": "ExpenseManagement.API\\Models\\Expense.cs",
               "ViewState": "AgIAAAQAAAAAAAAAAAAAAAsAAAAdAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-10-27T09:28:26.334Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-10-27T09:28:26.334Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 4,
+              "DocumentIndex": 3,
               "Title": "Category.cs",
               "DocumentMoniker": "C:\\Users\\mahitabmohamad\\Desktop\\New folder\\My Documents\\API Projects\\Expense Management System\\ExpenseManagement.API\\ExpenseManagement.API\\Models\\Category.cs",
               "RelativeDocumentMoniker": "ExpenseManagement.API\\Models\\Category.cs",
@@ -115,12 +95,11 @@
               "RelativeToolTip": "ExpenseManagement.API\\Models\\Category.cs",
               "ViewState": "AgIAAAoAAAAAAAAAAAAAABAAAAAsAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-10-27T07:42:39.205Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-10-27T07:42:39.205Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 5,
+              "DocumentIndex": 4,
               "Title": "ApplicationUser.cs",
               "DocumentMoniker": "C:\\Users\\mahitabmohamad\\Desktop\\New folder\\My Documents\\API Projects\\Expense Management System\\ExpenseManagement.API\\ExpenseManagement.API\\Models\\ApplicationUser.cs",
               "RelativeDocumentMoniker": "ExpenseManagement.API\\Models\\ApplicationUser.cs",
@@ -128,8 +107,7 @@
               "RelativeToolTip": "ExpenseManagement.API\\Models\\ApplicationUser.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAsAAAAsAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-10-27T07:42:28.448Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-10-27T07:42:28.448Z"
             }
           ]
         }

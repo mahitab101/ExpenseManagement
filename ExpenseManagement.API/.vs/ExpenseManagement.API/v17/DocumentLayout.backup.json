@@ -3,6 +3,10 @@
   "WorkspaceRootPath": "C:\\Users\\mahitabmohamad\\Desktop\\New folder\\My Documents\\API Projects\\Expense Management System\\ExpenseManagement.API\\",
   "Documents": [
     {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\mahitabmohamad\\Desktop\\New folder\\My Documents\\API Projects\\Expense Management System\\ExpenseManagement.API\\ExpenseManagement.API\\Migrations\\20251027160549_initMigration.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:ExpenseManagement.API\\Migrations\\20251027160549_initMigration.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
       "AbsoluteMoniker": "D:0:0:{D5D7264F-C695-45AC-8C02-FC7C395B421E}|ExpenseManagement.API\\ExpenseManagement.API.csproj|c:\\users\\mahitabmohamad\\desktop\\new folder\\my documents\\api projects\\expense management system\\expensemanagement.api\\expensemanagement.api\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{D5D7264F-C695-45AC-8C02-FC7C395B421E}|ExpenseManagement.API\\ExpenseManagement.API.csproj|solutionrelative:expensemanagement.api\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
@@ -34,11 +38,24 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 1,
+          "SelectedChildIndex": 0,
           "Children": [
             {
               "$type": "Document",
-              "DocumentIndex": 2,
+              "DocumentIndex": 0,
+              "Title": "20251027160549_initMigration.cs",
+              "DocumentMoniker": "C:\\Users\\mahitabmohamad\\Desktop\\New folder\\My Documents\\API Projects\\Expense Management System\\ExpenseManagement.API\\ExpenseManagement.API\\Migrations\\20251027160549_initMigration.cs",
+              "RelativeDocumentMoniker": "ExpenseManagement.API\\Migrations\\20251027160549_initMigration.cs",
+              "ToolTip": "C:\\Users\\mahitabmohamad\\Desktop\\New folder\\My Documents\\API Projects\\Expense Management System\\ExpenseManagement.API\\ExpenseManagement.API\\Migrations\\20251027160549_initMigration.cs",
+              "RelativeToolTip": "ExpenseManagement.API\\Migrations\\20251027160549_initMigration.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-10-27T16:05:49.751Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
               "Title": "appsettings.json",
               "DocumentMoniker": "C:\\Users\\mahitabmohamad\\Desktop\\New folder\\My Documents\\API Projects\\Expense Management System\\ExpenseManagement.API\\ExpenseManagement.API\\appsettings.json",
               "RelativeDocumentMoniker": "ExpenseManagement.API\\appsettings.json",
@@ -51,7 +68,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 0,
+              "DocumentIndex": 1,
               "Title": "Program.cs",
               "DocumentMoniker": "C:\\Users\\mahitabmohamad\\Desktop\\New folder\\My Documents\\API Projects\\Expense Management System\\ExpenseManagement.API\\ExpenseManagement.API\\Program.cs",
               "RelativeDocumentMoniker": "ExpenseManagement.API\\Program.cs",
@@ -64,7 +81,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 2,
               "Title": "ApplicationDbContext.cs",
               "DocumentMoniker": "C:\\Users\\mahitabmohamad\\Desktop\\New folder\\My Documents\\API Projects\\Expense Management System\\ExpenseManagement.API\\ExpenseManagement.API\\Data\\ApplicationDbContext.cs",
               "RelativeDocumentMoniker": "ExpenseManagement.API\\Data\\ApplicationDbContext.cs",
@@ -77,7 +94,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 5,
+              "DocumentIndex": 6,
               "Title": "Expense.cs",
               "DocumentMoniker": "C:\\Users\\mahitabmohamad\\Desktop\\New folder\\My Documents\\API Projects\\Expense Management System\\ExpenseManagement.API\\ExpenseManagement.API\\Models\\Expense.cs",
               "RelativeDocumentMoniker": "ExpenseManagement.API\\Models\\Expense.cs",
@@ -90,7 +107,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 3,
+              "DocumentIndex": 4,
               "Title": "Category.cs",
               "DocumentMoniker": "C:\\Users\\mahitabmohamad\\Desktop\\New folder\\My Documents\\API Projects\\Expense Management System\\ExpenseManagement.API\\ExpenseManagement.API\\Models\\Category.cs",
               "RelativeDocumentMoniker": "ExpenseManagement.API\\Models\\Category.cs",
@@ -103,7 +120,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 4,
+              "DocumentIndex": 5,
               "Title": "ApplicationUser.cs",
               "DocumentMoniker": "C:\\Users\\mahitabmohamad\\Desktop\\New folder\\My Documents\\API Projects\\Expense Management System\\ExpenseManagement.API\\ExpenseManagement.API\\Models\\ApplicationUser.cs",
               "RelativeDocumentMoniker": "ExpenseManagement.API\\Models\\ApplicationUser.cs",
