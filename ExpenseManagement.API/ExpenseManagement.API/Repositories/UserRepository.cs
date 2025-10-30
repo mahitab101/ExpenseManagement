@@ -16,6 +16,19 @@ namespace ExpenseManagement.API.Repositories
         {
             _userManager = userManager;
         }
+
+        public async Task<ApplicationUser> Login(string email, string password)
+        {
+           var user = await _userManager.FindByEmailAsync(email);
+            if (user == null) return null;
+
+            var isValid = await _userManager.CheckPasswordAsync(user, password);
+            if (!isValid) return null;
+
+            return user;
+
+        }
+
         public async Task<bool> Registeration(RegisterDto registerDto)
         {
             var userExists = await _userManager.FindByEmailAsync(registerDto.Email);
