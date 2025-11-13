@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ExpenseManagement.API.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20251027160549_initMigration")]
-    partial class initMigration
+    [Migration("20251113140009_init")]
+    partial class init
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -175,6 +175,34 @@ namespace ExpenseManagement.API.Migrations
                     b.ToTable("Expenses");
                 });
 
+            modelBuilder.Entity("ExpenseManagement.API.Models.RefreshToken", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("ExpiresOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("RevokedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Token")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("RefreshTokens");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole<System.Guid>", b =>
                 {
                     b.Property<Guid>("Id")
@@ -201,6 +229,20 @@ namespace ExpenseManagement.API.Migrations
                         .HasFilter("[NormalizedName] IS NOT NULL");
 
                     b.ToTable("AspNetRoles", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("d64328e7-6554-459c-bfc1-9f94f64d4bb9"),
+                            Name = "Admin",
+                            NormalizedName = "ADMIN"
+                        },
+                        new
+                        {
+                            Id = new Guid("89211a2f-def5-417f-ba53-5e97e18a1a30"),
+                            Name = "User",
+                            NormalizedName = "USER"
+                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<System.Guid>", b =>
@@ -336,6 +378,17 @@ namespace ExpenseManagement.API.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("ExpenseManagement.API.Models.RefreshToken", b =>
+                {
+                    b.HasOne("ExpenseManagement.API.Models.ApplicationUser", "User")
+                        .WithMany("RefreshTokens")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<System.Guid>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole<System.Guid>", null)
@@ -392,6 +445,8 @@ namespace ExpenseManagement.API.Migrations
                     b.Navigation("Categories");
 
                     b.Navigation("Expenses");
+
+                    b.Navigation("RefreshTokens");
                 });
 
             modelBuilder.Entity("ExpenseManagement.API.Models.Category", b =>

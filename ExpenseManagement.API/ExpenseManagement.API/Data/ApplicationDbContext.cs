@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using System.Reflection;
 
 namespace ExpenseManagement.API.Data
 {
@@ -9,8 +10,9 @@ namespace ExpenseManagement.API.Data
     {
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options) { }
 
-        DbSet<Category> Categories { get; set; }
-        DbSet<Expense> Expenses { get; set; }
+        public DbSet<Category> Categories { get; set; }
+        public DbSet<Expense> Expenses { get; set; }
+        public DbSet<RefreshToken> RefreshTokens { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -33,6 +35,14 @@ namespace ExpenseManagement.API.Data
                 .WithMany(u => u.Expenses)
                 .HasForeignKey(e => e.UserId)
                 .OnDelete(DeleteBehavior.Cascade);
+
+            builder.Entity<RefreshToken>()
+                .HasOne(r => r.User)
+                .WithMany(u => u.RefreshTokens)
+                .HasForeignKey(r => r.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            builder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
         }
 
     }

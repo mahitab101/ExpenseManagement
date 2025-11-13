@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 
 namespace ExpenseManagement.API.Models
 {
@@ -10,5 +11,6 @@ namespace ExpenseManagement.API.Models
 
         public ICollection<Category> Categories { get; set; }
         public ICollection<Expense> Expenses { get; set; }
+        public List<RefreshToken> RefreshTokens { get; set; } 
     }
 }

@@ -5668,23 +5668,23 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\mahitabmohamad\\.nuget\\packages\\": {},
+    "C:\\Users\\mahit\\.nuget\\packages\\": {},
     "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\mahitabmohamad\\Desktop\\New folder\\My Documents\\API Projects\\Expense Management System\\ExpenseManagement.API\\ExpenseManagement.API\\ExpenseManagement.API.csproj",
+      "projectUniqueName": "C:\\Users\\mahit\\source\\repos\\ExpenseManagement\\ExpenseManagement.API\\ExpenseManagement.API\\ExpenseManagement.API.csproj",
       "projectName": "ExpenseManagement.API",
-      "projectPath": "C:\\Users\\mahitabmohamad\\Desktop\\New folder\\My Documents\\API Projects\\Expense Management System\\ExpenseManagement.API\\ExpenseManagement.API\\ExpenseManagement.API.csproj",
-      "packagesPath": "C:\\Users\\mahitabmohamad\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\mahitabmohamad\\Desktop\\New folder\\My Documents\\API Projects\\Expense Management System\\ExpenseManagement.API\\ExpenseManagement.API\\obj\\",
+      "projectPath": "C:\\Users\\mahit\\source\\repos\\ExpenseManagement\\ExpenseManagement.API\\ExpenseManagement.API\\ExpenseManagement.API.csproj",
+      "packagesPath": "C:\\Users\\mahit\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\mahit\\source\\repos\\ExpenseManagement\\ExpenseManagement.API\\ExpenseManagement.API\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
       ],
       "configFilePaths": [
-        "C:\\Users\\mahitabmohamad\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Users\\mahit\\AppData\\Roaming\\NuGet\\NuGet.Config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
@@ -5771,7 +5771,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.306/PortableRuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.307/PortableRuntimeIdentifierGraph.json"
       }
     }
   }
