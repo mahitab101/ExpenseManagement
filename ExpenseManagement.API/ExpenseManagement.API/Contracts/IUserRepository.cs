@@ -9,6 +9,6 @@ namespace ExpenseManagement.API.Contracts
         Task<UserDto> Login(string email, string password);
         Task<UserDto> RefreshToken(string token);
         Task<bool> Logout(string refreshToken);
-        //Task<bool> RevokeTokenAsync(string token);
+        //Task<bool> RevokeToken(string token);
     }
 }
