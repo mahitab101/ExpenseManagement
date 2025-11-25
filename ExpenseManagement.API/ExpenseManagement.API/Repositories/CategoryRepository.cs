@@ -1,5 +1,6 @@
 ﻿using ExpenseManagement.API.Contracts;
 using ExpenseManagement.API.Data;
+using ExpenseManagement.API.DTOs.category;
 using ExpenseManagement.API.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -15,11 +16,16 @@ namespace ExpenseManagement.API.Repositories
         }
         public async Task<bool> AddAsync(Category category)
         {
+            var isExist = await _dbContext.Categories
+                 .AnyAsync(c => c.CategoryName == category.CategoryName && c.UserId == category.UserId);
+
+            if (isExist) return false;
+
             await _dbContext.Categories.AddAsync(category);
             return await _dbContext.SaveChangesAsync() > 0;
         }
 
-        public async Task<bool> DeleteAsync(int id, Guid userId)
+        public async Task<bool> DeleteAsync(int id, string userId)
         {
             var existingCategory = await _dbContext.Categories.FirstOrDefaultAsync(c => c.Id == id && c.UserId == userId);
             if (existingCategory == null)
@@ -34,30 +40,32 @@ namespace ExpenseManagement.API.Repositories
             return await _dbContext.SaveChangesAsync() > 0;
         }
 
-        public async Task<IEnumerable<Category>> GetAllAsync(Guid userId)
+        public async Task<IEnumerable<Category>> GetAllAsync(string userId)
         {
             return await _dbContext.Categories.Where(c=>c.UserId==userId).ToListAsync();
         }
 
-        public Task<Category> GetByIdAsync(int id, Guid userId)
+        public Task<Category> GetByIdAsync(int id, string userId)
         {
            return _dbContext.Categories.FirstOrDefaultAsync(c => c.Id == id && c.UserId == userId);
         }
 
-        public async Task<bool> UpdateAsync(Category category, Guid userId)
+        public async Task<bool> UpdateAsync(int id, UpdateCategoryDto category, string userId)
         {
-            var existingCategory = await _dbContext.Categories.FirstOrDefaultAsync(c => c.Id == category.Id && c.UserId == userId);
+            var existingCategory = await _dbContext.Categories
+                .FirstOrDefaultAsync(c => c.Id == id && c.UserId == userId);
+
             if (existingCategory == null)
-            {
                 return false;
-            }
 
             existingCategory.CategoryName = category.CategoryName;
             existingCategory.CategoryDescription = category.CategoryDescription;
             existingCategory.UpdatedAt = DateTime.UtcNow;
 
-            _dbContext.Categories.Update(existingCategory);
             return await _dbContext.SaveChangesAsync() > 0;
         }
+
+
+
     }
 }

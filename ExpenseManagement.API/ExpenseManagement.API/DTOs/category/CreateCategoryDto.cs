@@ -2,7 +2,7 @@
 
 namespace ExpenseManagement.API.DTOs.category
 {
-    public class CreateCtegoryDto
+    public class CreateCategoryDto
     {
         [Required]
         public string CategoryName { get; set; }

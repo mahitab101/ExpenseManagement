@@ -6,7 +6,7 @@ using System.Reflection;
 
 namespace ExpenseManagement.API.Data
 {
-    public class ApplicationDbContext : IdentityDbContext<ApplicationUser, IdentityRole<Guid>, Guid>
+    public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     {
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options) { }
 
@@ -43,6 +43,8 @@ namespace ExpenseManagement.API.Data
                 .OnDelete(DeleteBehavior.Cascade);
 
             builder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
+
+            builder.Entity<Category>().HasQueryFilter(c => !c.IsDelete);
         }
 
     }
