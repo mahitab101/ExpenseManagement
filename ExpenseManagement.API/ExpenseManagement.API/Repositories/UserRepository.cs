@@ -19,7 +19,10 @@ namespace ExpenseManagement.API.Repositories
         private readonly IConfiguration _configuration;
         private readonly ApplicationDbContext _context;
 
-        public UserRepository(UserManager<ApplicationUser> userManager, IConfiguration configuration, ApplicationDbContext context)
+        public UserRepository(
+            UserManager<ApplicationUser> userManager,
+            IConfiguration configuration,
+            ApplicationDbContext context)
         {
             _userManager = userManager;
             _configuration = configuration;
@@ -32,20 +35,22 @@ namespace ExpenseManagement.API.Repositories
             if (user == null) return null;
 
             var isValid = await _userManager.CheckPasswordAsync(user, password);
-            if(!isValid) return null;
+            if (!isValid) return null;
 
-            //get user role
+            // get user role
             var roles = await _userManager.GetRolesAsync(user);
             var role = roles.FirstOrDefault() ?? "User";
 
-            var jwtToken = GenerateJwtToken(user.Email,role);
+            // Id في Identity عبارة عن string
+            var jwtToken = GenerateJwtToken(user.Email, role, user.Id);
 
-            // Check for an existing active token
-               var activeRefreshToken = await _context.RefreshTokens
+            // Check for an existing active refresh token
+            var activeRefreshToken = await _context.RefreshTokens
                 .FirstOrDefaultAsync(rt =>
                     rt.UserId == user.Id &&
                     rt.RevokedOn == null &&
                     rt.ExpiresOn > DateTime.UtcNow);
+
             RefreshToken refreshToken;
 
             if (activeRefreshToken != null)
@@ -71,6 +76,7 @@ namespace ExpenseManagement.API.Repositories
                 ExpiresOn = refreshToken.ExpiresOn
             };
         }
+
         public async Task<UserDto> RefreshToken(string token)
         {
             var refreshToken = await _context.RefreshTokens
@@ -95,7 +101,7 @@ namespace ExpenseManagement.API.Repositories
             // Revoke old token
             refreshToken.RevokedOn = DateTime.UtcNow;
 
-            // Generate a new one
+            // Generate a new refresh token
             var newRefreshToken = GenerateRefreshToken();
             newRefreshToken.UserId = user.Id;
 
@@ -104,8 +110,8 @@ namespace ExpenseManagement.API.Repositories
             var roles = await _userManager.GetRolesAsync(user);
             var role = roles.FirstOrDefault() ?? "User";
 
-            // Generate new JWT
-            var newJwtToken = GenerateJwtToken(user.Email,role);
+            // Generate new JWT using user's real Id
+            var newJwtToken = GenerateJwtToken(user.Email, role, user.Id);
 
             try
             {
@@ -126,6 +132,7 @@ namespace ExpenseManagement.API.Repositories
                 ExpiresOn = newRefreshToken.ExpiresOn
             };
         }
+
         public async Task<bool> Registeration(RegisterDto registerDto)
         {
             var userExists = await _userManager.FindByEmailAsync(registerDto.Email);
@@ -140,12 +147,14 @@ namespace ExpenseManagement.API.Repositories
             };
 
             var result = await _userManager.CreateAsync(user, registerDto.Password);
-            if(!result.Succeeded) return false;
+            if (!result.Succeeded) return false;
+
             var roleResult = await _userManager.AddToRoleAsync(user, registerDto.Role);
-          if(!roleResult.Succeeded) return false;
+            if (!roleResult.Succeeded) return false;
 
             return true;
         }
+
         public async Task<bool> Logout(string refreshToken)
         {
             var token = await _context.RefreshTokens
@@ -166,21 +175,25 @@ namespace ExpenseManagement.API.Repositories
             await _context.SaveChangesAsync();
             return true;
         }
-        private string GenerateJwtToken(string email,string role)
+
+        private string GenerateJwtToken(string email, string role, string userId)
         {
-            var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
-            var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
+            var securityKey = new SymmetricSecurityKey(
+                Encoding.UTF8.GetBytes(_configuration["Jwt:Key"])); 
+
+            var credentials = new SigningCredentials(
+                securityKey, SecurityAlgorithms.HmacSha256);
 
             var claims = new[]
             {
+                new Claim(ClaimTypes.NameIdentifier, userId),
                 new Claim(ClaimTypes.Email, email),
                 new Claim(ClaimTypes.Role, role),
-                new Claim(ClaimTypes.NameIdentifier, email)
             };
 
             var token = new JwtSecurityToken(
-                issuer: _configuration["Jwt:Issuer"],
-                audience: _configuration["Jwt:Audience"],
+                issuer: _configuration["Jwt:Issuer"],   
+                audience: _configuration["Jwt:Audience"],   
                 claims: claims,
                 expires: DateTime.UtcNow.AddMinutes(30),
                 signingCredentials: credentials
@@ -188,6 +201,7 @@ namespace ExpenseManagement.API.Repositories
 
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
+
         private RefreshToken GenerateRefreshToken()
         {
             var randomNumber = new byte[32];
@@ -196,7 +210,7 @@ namespace ExpenseManagement.API.Repositories
             return new RefreshToken
             {
                 Token = Convert.ToBase64String(randomNumber),
-                ExpiresOn = DateTime.UtcNow.AddMinutes(2), // Will be => AddDays(7)
+                ExpiresOn = DateTime.UtcNow.AddDays(2),  
                 CreatedOn = DateTime.UtcNow
             };
         }

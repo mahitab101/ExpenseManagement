@@ -99,6 +99,7 @@ namespace ExpenseManagement.API.Controllers
         [HttpPost("refreshToken")]
         public async Task<IActionResult> RefreshToken()
         {
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             var refreshToken = Request.Cookies["refreshToken"];
           
                 if (string.IsNullOrEmpty(refreshToken))
