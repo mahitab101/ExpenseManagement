@@ -42,6 +42,7 @@ builder.Services.AddAutoMapper(cfg =>
 
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
+builder.Services.AddScoped<IExpenseRepository, ExpenseRepository>();
 
 // authntication
 builder.Services.AddAuthentication(options =>
