@@ -41,7 +41,7 @@ namespace ExpenseManagement.API.Repositories
             var roles = await _userManager.GetRolesAsync(user);
             var role = roles.FirstOrDefault() ?? "User";
 
-            // Id في Identity عبارة عن string
+            // 
             var jwtToken = GenerateJwtToken(user.Email, role, user.Id);
 
             // Check for an existing active refresh token

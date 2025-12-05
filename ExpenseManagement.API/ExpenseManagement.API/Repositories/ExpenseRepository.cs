@@ -13,7 +13,7 @@ public class ExpenseRepository : IExpenseRepository
         _context = context;
     }
 
-    public async Task<IEnumerable<ExpenseDto>> GetAllExpensesAsync(string userId)
+    public async Task<IEnumerable<ExpenseDto>> GetAllExpenses(string userId)
     {
         return await _context.Expenses
             .Where(e => e.UserId == userId && !e.IsDelete)
@@ -28,7 +28,7 @@ public class ExpenseRepository : IExpenseRepository
             }).ToListAsync();
     }
 
-    public async Task<ExpenseDto> GetExpenseByIdAsync(int id, string userId)
+    public async Task<ExpenseDto> GetExpenseById(int id, string userId)
     {
         var e = await _context.Expenses
             .Include(x => x.Category)
@@ -46,7 +46,7 @@ public class ExpenseRepository : IExpenseRepository
         };
     }
 
-    public async Task<ExpenseDto> AddExpenseAsync(CreateExpenseDto dto, string userId)
+    public async Task<ExpenseDto> AddExpense(CreateExpenseDto dto, string userId)
     {
         var expense = new Expense
         {
@@ -70,7 +70,7 @@ public class ExpenseRepository : IExpenseRepository
         };
     }
 
-    public async Task<bool> UpdateExpenseAsync(int id, CreateExpenseDto dto, string userId)
+    public async Task<bool> UpdateExpense(int id, CreateExpenseDto dto, string userId)
     {
         var expense = await _context.Expenses.FirstOrDefaultAsync(e => e.Id == id && e.UserId == userId);
         if (expense == null) return false;
@@ -86,7 +86,7 @@ public class ExpenseRepository : IExpenseRepository
         return true;
     }
 
-    public async Task<bool> DeleteExpenseAsync(int id, string userId)
+    public async Task<bool> DeleteExpense(int id, string userId)
     {
         var expense = await _context.Expenses.FirstOrDefaultAsync(e => e.Id == id && e.UserId == userId);
         if (expense == null) return false;

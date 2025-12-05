@@ -1,5 +1,8 @@
-﻿using ExpenseManagement.API.Contracts;
+﻿using AutoMapper;
+using ExpenseManagement.API.Contracts;
 using ExpenseManagement.API.DTOs.Expense;
+using ExpenseManagement.API.Helper;
+using ExpenseManagement.API.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
@@ -11,57 +14,97 @@ namespace ExpenseManagement.API.Controllers
     [Authorize]
     public class ExpenseController : ControllerBase
     {
-        private readonly IExpenseRepository _repo;
+        private readonly IExpenseRepository _expenseRepository;
+        private readonly IMapper _mapper;
 
-        public ExpenseController(IExpenseRepository repo)
+        public ExpenseController(IExpenseRepository expenseRepository,IMapper mapper)
         {
-            _repo = repo;
+            _expenseRepository = expenseRepository;
+            _mapper = mapper;
         }
-
-        private string GetUserId() =>
-                   User.FindFirstValue(ClaimTypes.NameIdentifier);
 
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-            var userId = GetUserId();
-            var expenses = await _repo.GetAllExpensesAsync(userId);
-            return Ok(expenses);
+            var userId = User.GetUserId();
+            var expenses = await _expenseRepository.GetAllExpenses(userId);
+            return Ok(new ApiResponse<object>(
+                true,
+                "Expenses retrieved successfully.",
+                expenses
+                ));
         }
 
         [HttpGet("{id}")]
-        public async Task<IActionResult> Get(int id)
+        public async Task<IActionResult> GetById(int id)
         {
-            var userId = GetUserId();
-            var expense = await _repo.GetExpenseByIdAsync(id, userId);
-            if (expense == null) return NotFound();
-            return Ok(expense);
+            var userId = User.GetUserId();
+            var expense = await _expenseRepository.GetExpenseById(id, userId);
+            if (expense == null)
+            {
+                return NotFound(new ApiResponse<object>(
+                   false,
+                   "No Data found.",
+                   null
+               ));
+            }
+            return Ok(new ApiResponse<object>(
+                   true,
+                   "Expense retrieved successfully.",
+                   expense
+                ));
         }
 
         [HttpPost]
         public async Task<IActionResult> Create(CreateExpenseDto dto)
         {
-            var userId = GetUserId();
-            var result = await _repo.AddExpenseAsync(dto, userId);
-            return Ok(result);
+            var userId = User.GetUserId();
+            var result = await _expenseRepository.AddExpense(dto, userId);
+            return Ok(new ApiResponse<object>(
+                true,
+                "Expense created successfully",
+                result
+                ));
         }
 
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(int id, CreateExpenseDto dto)
         {
-            var userId = GetUserId();
-            var updated = await _repo.UpdateExpenseAsync(id, dto, userId);
-            if (!updated) return NotFound();
-            return Ok("Expense updated successfully");
+            var userId = User.GetUserId();
+            var updated = await _expenseRepository.UpdateExpense(id, dto, userId);
+            if (!updated)
+            {
+                return NotFound(new ApiResponse<object>(
+                    false,
+                    "Expense not found.",
+                    null
+                    ));
+            }
+            return Ok(new ApiResponse<object>(
+                true,
+                "Expense updated successfully",
+                null
+                ));
         }
 
-        [HttpDelete("{id}")]
+        [HttpPut("delete/{id}")]
         public async Task<IActionResult> Delete(int id)
         {
-            var userId = GetUserId();
-            var deleted = await _repo.DeleteExpenseAsync(id, userId);
-            if (!deleted) return NotFound();
-            return Ok("Expense deleted successfully");
+            var userId = User.GetUserId();
+            var deleted = await _expenseRepository.DeleteExpense(id, userId);
+            if (!deleted)
+            {
+                return NotFound(new ApiResponse<object>(
+        false,
+        "Expense not found.",
+        null
+        ));
+            }
+            return Ok(new ApiResponse<object>(
+                true,
+                "Expense deleted successfully",
+                null
+                ));
         }
     }
 }
