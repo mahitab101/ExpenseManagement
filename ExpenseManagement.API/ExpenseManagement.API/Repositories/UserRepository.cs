@@ -41,11 +41,12 @@ namespace ExpenseManagement.API.Repositories
             var roles = await _userManager.GetRolesAsync(user);
             var role = roles.FirstOrDefault() ?? "User";
 
-            // Id في Identity عبارة عن string
+            // 
             var jwtToken = GenerateJwtToken(user.Email, role, user.Id);
 
             // Check for an existing active refresh token
             var activeRefreshToken = await _context.RefreshTokens
+                .AsNoTracking()
                 .FirstOrDefaultAsync(rt =>
                     rt.UserId == user.Id &&
                     rt.RevokedOn == null &&
@@ -62,9 +63,9 @@ namespace ExpenseManagement.API.Repositories
                 refreshToken = GenerateRefreshToken();
                 refreshToken.UserId = user.Id;
                 _context.RefreshTokens.Add(refreshToken);
+               await _context.SaveChangesAsync();
             }
 
-            await _context.SaveChangesAsync();
 
             return new UserDto
             {

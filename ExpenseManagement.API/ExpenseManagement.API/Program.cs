@@ -5,6 +5,7 @@ using ExpenseManagement.API.Models;
 using ExpenseManagement.API.Repositories;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Serilog;
@@ -18,6 +19,9 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+using var conn = new SqlConnection(builder.Configuration.GetConnectionString("defaultConnection"));
+conn.Open();
+Console.WriteLine("Connected successfully!");
 
 // connection string
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
@@ -42,6 +46,7 @@ builder.Services.AddAutoMapper(cfg =>
 
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
+builder.Services.AddScoped<IExpenseRepository, ExpenseRepository>();
 
 // authntication
 builder.Services.AddAuthentication(options =>
