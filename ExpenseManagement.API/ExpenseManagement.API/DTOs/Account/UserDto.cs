@@ -11,5 +11,7 @@ namespace ExpenseManagement.API.DTOs.Account
         public string RefreshToken { get; set; }
         public string Email { get; set; }
         public DateTime ExpiresOn { get; set; }
+        public bool Is2FactorRequired { get; set; }
+        public string? Provider { get; set; }
     }
 }

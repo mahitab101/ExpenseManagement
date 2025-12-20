@@ -2,7 +2,9 @@
 using ExpenseManagement.API.Data;
 using ExpenseManagement.API.DTOs.Account;
 using ExpenseManagement.API.Models;
+using ExpenseManagement.API.Services;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
@@ -18,15 +20,21 @@ namespace ExpenseManagement.API.Repositories
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IConfiguration _configuration;
         private readonly ApplicationDbContext _context;
+        private readonly IEmailService _emailService;
+        private readonly IEmailTemplateService _emailTemplate;
 
         public UserRepository(
             UserManager<ApplicationUser> userManager,
             IConfiguration configuration,
-            ApplicationDbContext context)
+            ApplicationDbContext context,
+            IEmailService emailService,
+            IEmailTemplateService emailTemplate)
         {
             _userManager = userManager;
             _configuration = configuration;
             _context = context;
+            _emailService = emailService;
+            _emailTemplate = emailTemplate;
         }
 
         public async Task<UserDto> Login(string email, string password)
@@ -150,12 +158,41 @@ namespace ExpenseManagement.API.Repositories
             var result = await _userManager.CreateAsync(user, registerDto.Password);
             if (!result.Succeeded) return false;
 
+            // 1) Generate email confirmation token
+            var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+
+            // 2) Encode token safely
+            var encodedToken = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(token));
+
+            // 3) Build confirmation link
+            var confirmationLink = $"{_configuration["BaseUrl"]}/api/accounts/confirmEmail?userId={user.Id}&token={encodedToken}";
+
+            // TODO: Send Email
+            //await _emailService.SendEmailAsync(
+            //         user.Email,
+            //         "Confirm your email",
+            //         $"Click this link to confirm your email: {confirmationLink}"
+            //     );
+
+            int tokenExpiryMinutes = 15;
+
+            var templateValues = new Dictionary<string, string>()
+                    {
+                        { "UserName", user.FirstName+" "+user.LastName },
+                        { "ConfirmationLink", confirmationLink },
+                        { "TokenExpiryMinutes", tokenExpiryMinutes.ToString() }
+                    };
+
+            string html = await _emailTemplate.LoadTemplateAsync("ConfirmEmailTemplate", templateValues);
+
+            await _emailService.SendEmailAsync(user.Email, "Confirm Your Email", html);
+
+
             var roleResult = await _userManager.AddToRoleAsync(user, registerDto.Role);
             if (!roleResult.Succeeded) return false;
 
             return true;
         }
-
         public async Task<bool> Logout(string refreshToken)
         {
             var token = await _context.RefreshTokens

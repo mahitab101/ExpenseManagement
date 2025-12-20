@@ -3,6 +3,7 @@ using ExpenseManagement.API.Contracts;
 using ExpenseManagement.API.Data;
 using ExpenseManagement.API.Models;
 using ExpenseManagement.API.Repositories;
+using ExpenseManagement.API.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Data.SqlClient;
@@ -47,6 +48,8 @@ builder.Services.AddAutoMapper(cfg =>
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
 builder.Services.AddScoped<IExpenseRepository, ExpenseRepository>();
+builder.Services.AddScoped<IEmailTemplateService, EmailTemplateService>();
+builder.Services.AddScoped<IEmailService, EmailService>();
 
 // authntication
 builder.Services.AddAuthentication(options =>
@@ -77,6 +80,11 @@ builder.Services.ConfigureApplicationCookie(options =>
         context.Response.StatusCode = 401;
         return Task.CompletedTask;
     };
+});
+
+builder.Services.Configure<DataProtectionTokenProviderOptions>(opt =>
+{
+    opt.TokenLifespan = TimeSpan.FromMinutes(15);
 });
 
 var app = builder.Build();

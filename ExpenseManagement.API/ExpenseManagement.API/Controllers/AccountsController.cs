@@ -4,7 +4,9 @@ using ExpenseManagement.API.DTOs.Account;
 using ExpenseManagement.API.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
@@ -20,10 +22,12 @@ namespace ExpenseManagement.API.Controllers
     public class AccountsController : ControllerBase
     {
         private readonly IUserRepository _userRepository;
+        private readonly UserManager<ApplicationUser> _userManager;
 
-        public AccountsController(IUserRepository userRepository)
+        public AccountsController(IUserRepository userRepository, UserManager<ApplicationUser> userManager)
         {
             _userRepository = userRepository;
+            _userManager = userManager;
         }
 
         [HttpPost("register")]
@@ -55,6 +59,26 @@ namespace ExpenseManagement.API.Controllers
                 "User registered successfully."
             );
             return Ok(successResponse);
+        }
+
+
+        [HttpGet("confirmEmail")]
+        public async Task<IActionResult> ConfirmEmail(string userId, string token)
+        {
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user == null)
+                return BadRequest("User not found");
+
+            // Decode the token
+            var decodedBytes = WebEncoders.Base64UrlDecode(token);
+            var decodedToken = Encoding.UTF8.GetString(decodedBytes);
+
+            var result = await _userManager.ConfirmEmailAsync(user, decodedToken);
+
+            if (!result.Succeeded)
+                return BadRequest("Invalid token");
+
+            return Ok("Email confirmed successfully");
         }
 
         [HttpPost("login")]
