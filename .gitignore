@@ -4,3 +4,6 @@ obj/
 *.user
 *.dbmdl
 *.log
+# Logs
+logs/
+*.log
