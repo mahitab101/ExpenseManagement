@@ -9,20 +9,38 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as CategoryIndexRouteImport } from './routes/category/index'
+import { Route as DashboardIndexRouteImport } from './routes/dashboard/index'
+import { Route as DashboardExpenseIndexRouteImport } from './routes/dashboard/expense/index'
+import { Route as DashboardCategoryIndexRouteImport } from './routes/dashboard/category/index'
 import { Route as AccountRegisterIndexRouteImport } from './routes/account/register/index'
 import { Route as AccountLoginIndexRouteImport } from './routes/account/login/index'
 
+const DashboardRoute = DashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const CategoryIndexRoute = CategoryIndexRouteImport.update({
+const DashboardIndexRoute = DashboardIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => DashboardRoute,
+} as any)
+const DashboardExpenseIndexRoute = DashboardExpenseIndexRouteImport.update({
+  id: '/expense/',
+  path: '/expense/',
+  getParentRoute: () => DashboardRoute,
+} as any)
+const DashboardCategoryIndexRoute = DashboardCategoryIndexRouteImport.update({
   id: '/category/',
   path: '/category/',
-  getParentRoute: () => rootRouteImport,
+  getParentRoute: () => DashboardRoute,
 } as any)
 const AccountRegisterIndexRoute = AccountRegisterIndexRouteImport.update({
   id: '/account/register/',
@@ -37,40 +55,76 @@ const AccountLoginIndexRoute = AccountLoginIndexRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/category': typeof CategoryIndexRoute
+  '/dashboard': typeof DashboardRouteWithChildren
+  '/dashboard/': typeof DashboardIndexRoute
   '/account/login': typeof AccountLoginIndexRoute
   '/account/register': typeof AccountRegisterIndexRoute
+  '/dashboard/category': typeof DashboardCategoryIndexRoute
+  '/dashboard/expense': typeof DashboardExpenseIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/category': typeof CategoryIndexRoute
+  '/dashboard': typeof DashboardIndexRoute
   '/account/login': typeof AccountLoginIndexRoute
   '/account/register': typeof AccountRegisterIndexRoute
+  '/dashboard/category': typeof DashboardCategoryIndexRoute
+  '/dashboard/expense': typeof DashboardExpenseIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/category/': typeof CategoryIndexRoute
+  '/dashboard': typeof DashboardRouteWithChildren
+  '/dashboard/': typeof DashboardIndexRoute
   '/account/login/': typeof AccountLoginIndexRoute
   '/account/register/': typeof AccountRegisterIndexRoute
+  '/dashboard/category/': typeof DashboardCategoryIndexRoute
+  '/dashboard/expense/': typeof DashboardExpenseIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/category' | '/account/login' | '/account/register'
+  fullPaths:
+    | '/'
+    | '/dashboard'
+    | '/dashboard/'
+    | '/account/login'
+    | '/account/register'
+    | '/dashboard/category'
+    | '/dashboard/expense'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/category' | '/account/login' | '/account/register'
-  id: '__root__' | '/' | '/category/' | '/account/login/' | '/account/register/'
+  to:
+    | '/'
+    | '/dashboard'
+    | '/account/login'
+    | '/account/register'
+    | '/dashboard/category'
+    | '/dashboard/expense'
+  id:
+    | '__root__'
+    | '/'
+    | '/dashboard'
+    | '/dashboard/'
+    | '/account/login/'
+    | '/account/register/'
+    | '/dashboard/category/'
+    | '/dashboard/expense/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  CategoryIndexRoute: typeof CategoryIndexRoute
+  DashboardRoute: typeof DashboardRouteWithChildren
   AccountLoginIndexRoute: typeof AccountLoginIndexRoute
   AccountRegisterIndexRoute: typeof AccountRegisterIndexRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/dashboard': {
+      id: '/dashboard'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof DashboardRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -78,12 +132,26 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/category/': {
-      id: '/category/'
+    '/dashboard/': {
+      id: '/dashboard/'
+      path: '/'
+      fullPath: '/dashboard/'
+      preLoaderRoute: typeof DashboardIndexRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/dashboard/expense/': {
+      id: '/dashboard/expense/'
+      path: '/expense'
+      fullPath: '/dashboard/expense'
+      preLoaderRoute: typeof DashboardExpenseIndexRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/dashboard/category/': {
+      id: '/dashboard/category/'
       path: '/category'
-      fullPath: '/category'
-      preLoaderRoute: typeof CategoryIndexRouteImport
-      parentRoute: typeof rootRouteImport
+      fullPath: '/dashboard/category'
+      preLoaderRoute: typeof DashboardCategoryIndexRouteImport
+      parentRoute: typeof DashboardRoute
     }
     '/account/register/': {
       id: '/account/register/'
@@ -102,9 +170,25 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface DashboardRouteChildren {
+  DashboardIndexRoute: typeof DashboardIndexRoute
+  DashboardCategoryIndexRoute: typeof DashboardCategoryIndexRoute
+  DashboardExpenseIndexRoute: typeof DashboardExpenseIndexRoute
+}
+
+const DashboardRouteChildren: DashboardRouteChildren = {
+  DashboardIndexRoute: DashboardIndexRoute,
+  DashboardCategoryIndexRoute: DashboardCategoryIndexRoute,
+  DashboardExpenseIndexRoute: DashboardExpenseIndexRoute,
+}
+
+const DashboardRouteWithChildren = DashboardRoute._addFileChildren(
+  DashboardRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  CategoryIndexRoute: CategoryIndexRoute,
+  DashboardRoute: DashboardRouteWithChildren,
   AccountLoginIndexRoute: AccountLoginIndexRoute,
   AccountRegisterIndexRoute: AccountRegisterIndexRoute,
 }
