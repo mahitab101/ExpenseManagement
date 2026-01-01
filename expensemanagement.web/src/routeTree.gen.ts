@@ -9,7 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as DashboardRouteImport } from './routes/dashboard'
+import { Route as DashboardRouteRouteImport } from './routes/dashboard/route'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as DashboardIndexRouteImport } from './routes/dashboard/index'
 import { Route as DashboardExpenseIndexRouteImport } from './routes/dashboard/expense/index'
@@ -17,7 +17,7 @@ import { Route as DashboardCategoryIndexRouteImport } from './routes/dashboard/c
 import { Route as AccountRegisterIndexRouteImport } from './routes/account/register/index'
 import { Route as AccountLoginIndexRouteImport } from './routes/account/login/index'
 
-const DashboardRoute = DashboardRouteImport.update({
+const DashboardRouteRoute = DashboardRouteRouteImport.update({
   id: '/dashboard',
   path: '/dashboard',
   getParentRoute: () => rootRouteImport,
@@ -30,17 +30,17 @@ const IndexRoute = IndexRouteImport.update({
 const DashboardIndexRoute = DashboardIndexRouteImport.update({
   id: '/',
   path: '/',
-  getParentRoute: () => DashboardRoute,
+  getParentRoute: () => DashboardRouteRoute,
 } as any)
 const DashboardExpenseIndexRoute = DashboardExpenseIndexRouteImport.update({
   id: '/expense/',
   path: '/expense/',
-  getParentRoute: () => DashboardRoute,
+  getParentRoute: () => DashboardRouteRoute,
 } as any)
 const DashboardCategoryIndexRoute = DashboardCategoryIndexRouteImport.update({
   id: '/category/',
   path: '/category/',
-  getParentRoute: () => DashboardRoute,
+  getParentRoute: () => DashboardRouteRoute,
 } as any)
 const AccountRegisterIndexRoute = AccountRegisterIndexRouteImport.update({
   id: '/account/register/',
@@ -55,7 +55,7 @@ const AccountLoginIndexRoute = AccountLoginIndexRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/dashboard': typeof DashboardRouteWithChildren
+  '/dashboard': typeof DashboardRouteRouteWithChildren
   '/dashboard/': typeof DashboardIndexRoute
   '/account/login': typeof AccountLoginIndexRoute
   '/account/register': typeof AccountRegisterIndexRoute
@@ -73,7 +73,7 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/dashboard': typeof DashboardRouteWithChildren
+  '/dashboard': typeof DashboardRouteRouteWithChildren
   '/dashboard/': typeof DashboardIndexRoute
   '/account/login/': typeof AccountLoginIndexRoute
   '/account/register/': typeof AccountRegisterIndexRoute
@@ -111,7 +111,7 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  DashboardRoute: typeof DashboardRouteWithChildren
+  DashboardRouteRoute: typeof DashboardRouteRouteWithChildren
   AccountLoginIndexRoute: typeof AccountLoginIndexRoute
   AccountRegisterIndexRoute: typeof AccountRegisterIndexRoute
 }
@@ -122,7 +122,7 @@ declare module '@tanstack/react-router' {
       id: '/dashboard'
       path: '/dashboard'
       fullPath: '/dashboard'
-      preLoaderRoute: typeof DashboardRouteImport
+      preLoaderRoute: typeof DashboardRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -137,21 +137,21 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/dashboard/'
       preLoaderRoute: typeof DashboardIndexRouteImport
-      parentRoute: typeof DashboardRoute
+      parentRoute: typeof DashboardRouteRoute
     }
     '/dashboard/expense/': {
       id: '/dashboard/expense/'
       path: '/expense'
       fullPath: '/dashboard/expense'
       preLoaderRoute: typeof DashboardExpenseIndexRouteImport
-      parentRoute: typeof DashboardRoute
+      parentRoute: typeof DashboardRouteRoute
     }
     '/dashboard/category/': {
       id: '/dashboard/category/'
       path: '/category'
       fullPath: '/dashboard/category'
       preLoaderRoute: typeof DashboardCategoryIndexRouteImport
-      parentRoute: typeof DashboardRoute
+      parentRoute: typeof DashboardRouteRoute
     }
     '/account/register/': {
       id: '/account/register/'
@@ -170,25 +170,25 @@ declare module '@tanstack/react-router' {
   }
 }
 
-interface DashboardRouteChildren {
+interface DashboardRouteRouteChildren {
   DashboardIndexRoute: typeof DashboardIndexRoute
   DashboardCategoryIndexRoute: typeof DashboardCategoryIndexRoute
   DashboardExpenseIndexRoute: typeof DashboardExpenseIndexRoute
 }
 
-const DashboardRouteChildren: DashboardRouteChildren = {
+const DashboardRouteRouteChildren: DashboardRouteRouteChildren = {
   DashboardIndexRoute: DashboardIndexRoute,
   DashboardCategoryIndexRoute: DashboardCategoryIndexRoute,
   DashboardExpenseIndexRoute: DashboardExpenseIndexRoute,
 }
 
-const DashboardRouteWithChildren = DashboardRoute._addFileChildren(
-  DashboardRouteChildren,
+const DashboardRouteRouteWithChildren = DashboardRouteRoute._addFileChildren(
+  DashboardRouteRouteChildren,
 )
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  DashboardRoute: DashboardRouteWithChildren,
+  DashboardRouteRoute: DashboardRouteRouteWithChildren,
   AccountLoginIndexRoute: AccountLoginIndexRoute,
   AccountRegisterIndexRoute: AccountRegisterIndexRoute,
 }
