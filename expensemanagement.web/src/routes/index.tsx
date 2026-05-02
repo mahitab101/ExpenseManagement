@@ -6,7 +6,7 @@ export const Route = createFileRoute('/')({
   component: App,
   beforeLoad: () => {
     throw redirect({
-      to: "/account/login",
+      to: "/login",
     })
   }
 })

@@ -1,11 +1,13 @@
 using ExpenseManagement.API.Configuration;
 using ExpenseManagement.API.Contracts;
 using ExpenseManagement.API.Data;
+using ExpenseManagement.API.Hubs;
 using ExpenseManagement.API.Models;
 using ExpenseManagement.API.Repositories;
 using ExpenseManagement.API.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -48,8 +50,16 @@ builder.Services.AddAutoMapper(cfg =>
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
 builder.Services.AddScoped<IExpenseRepository, ExpenseRepository>();
+builder.Services.AddScoped<ISavingsGoalRepository, SavingsGoalRepository>();
+builder.Services.AddScoped<ICategoryBudgetRepository, CategoryBudgetRepository>();
 builder.Services.AddScoped<IEmailTemplateService, EmailTemplateService>();
 builder.Services.AddScoped<IEmailService, EmailService>();
+builder.Services.AddScoped<IRecurringExpenseRepository, RecurringExpenseRepository>();
+
+builder.Services.AddSingleton<IUserIdProvider, CustomUserIdProvider>();
+
+//background service
+builder.Services.AddHostedService<RecurringExpenseBackgroundService>();
 
 // authntication
 builder.Services.AddAuthentication(options =>
@@ -71,6 +81,23 @@ builder.Services.AddAuthentication(options =>
         IssuerSigningKey = new SymmetricSecurityKey(
             Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]))
     };
+    options.Events = new JwtBearerEvents
+    {
+        OnMessageReceived = context =>
+        {
+            // جلب التوكن من الـ Query String
+            var accessToken = context.Request.Query["access_token"];
+
+            // التأكد من أن الطلب موجه للـ Hub
+            var path = context.HttpContext.Request.Path;
+            if (!string.IsNullOrEmpty(accessToken) &&
+                (path.StartsWithSegments("/notificationHub")))
+            {
+                context.Token = accessToken;
+            }
+            return Task.CompletedTask;
+        }
+    };
 });
 
 builder.Services.ConfigureApplicationCookie(options =>
@@ -87,6 +114,25 @@ builder.Services.Configure<DataProtectionTokenProviderOptions>(opt =>
     opt.TokenLifespan = TimeSpan.FromMinutes(15);
 });
 
+//CORS
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowFrontend", policy =>
+    {
+        policy
+            .WithOrigins("http://localhost:3000") // frontend
+            .AllowAnyHeader()
+            .AllowAnyMethod()
+            .AllowCredentials();
+    });
+});
+
+//   // QuestPDF community license
+   QuestPDF.Settings.License = QuestPDF.Infrastructure.LicenseType.Community;
+
+//signal R
+builder.Services.AddSignalR();
+builder.Services.AddHttpClient();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -96,10 +142,14 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.UseCors("AllowFrontend");
+
 app.UseHttpsRedirection();
+
+
 app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
-
+app.MapHub<NotificationHub>("/notificationHub");
 app.Run();

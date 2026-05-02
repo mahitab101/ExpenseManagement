@@ -109,11 +109,11 @@ namespace ExpenseManagement.API.Repositories
 
             // Revoke old token
             refreshToken.RevokedOn = DateTime.UtcNow;
-
+            _context.RefreshTokens.Update(refreshToken);
             // Generate a new refresh token
+
             var newRefreshToken = GenerateRefreshToken();
             newRefreshToken.UserId = user.Id;
-
             await _context.RefreshTokens.AddAsync(newRefreshToken);
 
             var roles = await _userManager.GetRolesAsync(user);
@@ -142,10 +142,11 @@ namespace ExpenseManagement.API.Repositories
             };
         }
 
-        public async Task<bool> Registeration(RegisterDto registerDto)
+        public async Task<RegisterResult> Registeration(RegisterDto registerDto)
         {
             var userExists = await _userManager.FindByEmailAsync(registerDto.Email);
-            if (userExists != null) return false;
+            if (userExists != null)
+                return new RegisterResult(false, "User already exists.", false);
 
             var user = new ApplicationUser
             {
@@ -155,43 +156,21 @@ namespace ExpenseManagement.API.Repositories
                 UserName = registerDto.Email
             };
 
-            var result = await _userManager.CreateAsync(user, registerDto.Password);
-            if (!result.Succeeded) return false;
-
-            // 1) Generate email confirmation token
-            var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-
-            // 2) Encode token safely
-            var encodedToken = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(token));
-
-            // 3) Build confirmation link
-            var confirmationLink = $"{_configuration["BaseUrl"]}/api/accounts/confirmEmail?userId={user.Id}&token={encodedToken}";
-
-            // TODO: Send Email
-            //await _emailService.SendEmailAsync(
-            //         user.Email,
-            //         "Confirm your email",
-            //         $"Click this link to confirm your email: {confirmationLink}"
-            //     );
-
-            int tokenExpiryMinutes = 15;
-
-            var templateValues = new Dictionary<string, string>()
-                    {
-                        { "UserName", user.FirstName+" "+user.LastName },
-                        { "ConfirmationLink", confirmationLink },
-                        { "TokenExpiryMinutes", tokenExpiryMinutes.ToString() }
-                    };
-
-            string html = await _emailTemplate.LoadTemplateAsync("ConfirmEmailTemplate", templateValues);
-
-            await _emailService.SendEmailAsync(user.Email, "Confirm Your Email", html);
-
+            var createResult = await _userManager.CreateAsync(user, registerDto.Password);
+            if (!createResult.Succeeded)
+            {
+                var errors = string.Join(", ", createResult.Errors.Select(e => e.Description));
+                return new RegisterResult(false, errors, false);
+            }
 
             var roleResult = await _userManager.AddToRoleAsync(user, registerDto.Role);
-            if (!roleResult.Succeeded) return false;
+            if (!roleResult.Succeeded)
+            {
+                var errors = string.Join(", ", roleResult.Errors.Select(e => e.Description));
+                return new RegisterResult(false, errors, false);
+            }
 
-            return true;
+            return new RegisterResult(true, "User registered successfully.", false);
         }
         public async Task<bool> Logout(string refreshToken)
         {

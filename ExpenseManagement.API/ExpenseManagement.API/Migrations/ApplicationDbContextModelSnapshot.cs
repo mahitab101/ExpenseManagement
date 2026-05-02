@@ -110,8 +110,14 @@ namespace ExpenseManagement.API.Migrations
                     b.Property<string>("CategoryName")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("Color")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
+
+                    b.Property<string>("Icon")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("IsDelete")
                         .HasColumnType("bit");
@@ -127,6 +133,44 @@ namespace ExpenseManagement.API.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("Categories");
+                });
+
+            modelBuilder.Entity("ExpenseManagement.API.Models.CategoryBudget", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<decimal>("Amount")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("CategoryId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("Month")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<int>("Year")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CategoryId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("CategoryBudgets");
                 });
 
             modelBuilder.Entity("ExpenseManagement.API.Models.Expense", b =>
@@ -170,6 +214,65 @@ namespace ExpenseManagement.API.Migrations
                     b.ToTable("Expenses");
                 });
 
+            modelBuilder.Entity("ExpenseManagement.API.Models.RecurringExpense", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<decimal>("Amount")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("CategoryId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("DayOfPeriod")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("EndDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("Interval")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsDelete")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime>("LastProcessed")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("NextDue")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("StartDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Title")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CategoryId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("RecurringExpenses");
+                });
+
             modelBuilder.Entity("ExpenseManagement.API.Models.RefreshToken", b =>
                 {
                     b.Property<int>("Id")
@@ -198,6 +301,119 @@ namespace ExpenseManagement.API.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("RefreshTokens");
+                });
+
+            modelBuilder.Entity("ExpenseManagement.API.Models.SavingsGoal", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Color")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsDelete")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal>("Saved")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal>("Target")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("SavingsGoals");
+                });
+
+            modelBuilder.Entity("ExpenseManagement.API.Models.SurplusAllocation", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<decimal>("Amount")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("Month")
+                        .HasColumnType("int");
+
+                    b.Property<int>("SavingsGoalId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<int>("Year")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("SavingsGoalId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("SurplusAllocations");
+                });
+
+            modelBuilder.Entity("ExpenseManagement.API.Models.UserSession", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Browser")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("DeviceInfo")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("IpAddress")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime?>("LastActiveAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("LoginAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("OS")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("UserSessions");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -357,6 +573,23 @@ namespace ExpenseManagement.API.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("ExpenseManagement.API.Models.CategoryBudget", b =>
+                {
+                    b.HasOne("ExpenseManagement.API.Models.Category", "Category")
+                        .WithMany("Budgets")
+                        .HasForeignKey("CategoryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("ExpenseManagement.API.Models.ApplicationUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId");
+
+                    b.Navigation("Category");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("ExpenseManagement.API.Models.Expense", b =>
                 {
                     b.HasOne("ExpenseManagement.API.Models.Category", "Category")
@@ -375,12 +608,64 @@ namespace ExpenseManagement.API.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("ExpenseManagement.API.Models.RecurringExpense", b =>
+                {
+                    b.HasOne("ExpenseManagement.API.Models.Category", "Category")
+                        .WithMany()
+                        .HasForeignKey("CategoryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("ExpenseManagement.API.Models.ApplicationUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId");
+
+                    b.Navigation("Category");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("ExpenseManagement.API.Models.RefreshToken", b =>
                 {
                     b.HasOne("ExpenseManagement.API.Models.ApplicationUser", "User")
                         .WithMany("RefreshTokens")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade);
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("ExpenseManagement.API.Models.SavingsGoal", b =>
+                {
+                    b.HasOne("ExpenseManagement.API.Models.ApplicationUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("ExpenseManagement.API.Models.SurplusAllocation", b =>
+                {
+                    b.HasOne("ExpenseManagement.API.Models.SavingsGoal", "SavingsGoal")
+                        .WithMany()
+                        .HasForeignKey("SavingsGoalId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("ExpenseManagement.API.Models.ApplicationUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId");
+
+                    b.Navigation("SavingsGoal");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("ExpenseManagement.API.Models.UserSession", b =>
+                {
+                    b.HasOne("ExpenseManagement.API.Models.ApplicationUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId");
 
                     b.Navigation("User");
                 });
@@ -447,6 +732,8 @@ namespace ExpenseManagement.API.Migrations
 
             modelBuilder.Entity("ExpenseManagement.API.Models.Category", b =>
                 {
+                    b.Navigation("Budgets");
+
                     b.Navigation("Expenses");
                 });
 #pragma warning restore 612, 618

@@ -22,7 +22,7 @@ function DashboardLayout() {
 
       <div className="flex flex-1 flex-col">
         <Topbar onMenuClick={() => setOpen(true)} />
-        <main className="flex-1 p-6 overflow-y-auto">
+        <main className="flex-1 p-10 overflow-y-auto bg-slate-100">
           <Outlet />
         </main>
       </div>

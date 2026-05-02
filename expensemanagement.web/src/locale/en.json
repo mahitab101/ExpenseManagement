@@ -1,0 +1,32 @@
+{
+    "title": "Expense Management",
+    "mainTitle":"Ledger",
+    "nav": {
+        "home": "Home",
+        "about": "About",
+        "contact": "Contact"
+    },
+        "expense":{
+        "title":"Expenses",
+        "subTitle":"Manage your expenses",
+        "table":{
+            "date":"Date",
+            "expense":"Expense",
+            "category":"Category",
+            "amount":"Amount",
+            "actions":"Actions"
+        },
+        "addExpense":"Add Expenses"
+    },
+    "category":{
+        "title":"Categories",
+        "subTitle":"Manage your categories and monthly budgets",
+        "table":{
+            "category":"Name",
+            "description":"Description",
+            "monthly Budget":"Monthly Budget",
+            "actions":"Actions"
+        },
+        "addCategory":"Add Category"
+    }
+}

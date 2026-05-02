@@ -60,6 +60,8 @@ namespace ExpenseManagement.API.Repositories
 
             existingCategory.CategoryName = category.CategoryName;
             existingCategory.CategoryDescription = category.CategoryDescription;
+            existingCategory.Color = category.Color;
+            existingCategory.Icon = category.Icon;
             existingCategory.UpdatedAt = DateTime.UtcNow;
 
             return await _dbContext.SaveChangesAsync() > 0;

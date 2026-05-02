@@ -1,0 +1,32 @@
+{
+    "title": "إدارة المصاريف",
+    "mainTitle":"دفتر الحسابات",
+    "nav": {
+        "home": "الصفحة الرئيسية",
+        "about": "حول",
+        "contact": "اتصل بنا"
+    },
+    "expense":{
+        "title":"المصاريف",
+        "subTitle":"إدارة مصاريفك",
+        "table":{
+            "date":"التاريخ",
+            "expense":"المصارف",
+            "category":"التصنيف",
+            "amount":"المبلغ",
+            "actions":"الإجراءات"
+        },
+        "addExpense":"اضافة مصروف"
+    },
+    "category":{
+        "title":"التصنيفات",
+        "subTitle":"قم بإدارة فئاتك وميزانياتك الشهرية",
+        "table":{
+            "category":"الاسم",
+            "description":"الوصف",
+            "monthly Budget":"الميزانية الشهرية",
+            "actions":"الإجراءات"
+        },
+        "addCategory":"اضافة تصنيف"
+    }
+}

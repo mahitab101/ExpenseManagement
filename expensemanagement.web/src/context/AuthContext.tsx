@@ -1,10 +1,138 @@
-import { createContext } from "react";
+// import { refreshTokenApi } from "@/api/auth";
+// import { setStoredAccessToken } from "@/service/authToken";
+// import type { UserData } from "@/Types";
+// import { useQuery } from "@tanstack/react-query";
+// import { createContext, useContext, useEffect, useState } from "react";
 
 
+// type AuthContextType = {
+//     accessToken: string | null;
+//     setAccessToken: (token: string | null) => void;
+//     user: UserData | null;
+//     setUser: (user: UserData | null) => void;
+//     isAuthenticated: boolean; 
+//     isLoading: boolean;       
+// }
+// const AuthContext = createContext<AuthContextType | undefined>(undefined);
+
+// export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
+//     const [accessToken, setAccessToken] = useState<string | null>(null);
+//     const [user, setUser] = useState<UserData | null>(null);
+
+//     const { data, isLoading, isSuccess, isError } = useQuery({
+//         queryKey: ["authUser"],
+//         queryFn: refreshTokenApi,
+//         retry: false,
+//         refetchOnWindowFocus: false, // يمنع إعادة الطلب عند تغيير التبويب
+//         staleTime: Infinity, // نعتمد على التوكن حتى نقرر نحن تحديثه
+//     });
+
+//     // تحديث الحالة المحلية عندما ينجح الطلب
+//     useEffect(() => {
+//         if (isSuccess && data?.success) {
+//             setAccessToken(data.data.token);
+//             setUser(data.data);
+//             setStoredAccessToken(data.data.token);
+//         }
+//     }, [isSuccess, data]);
+
+//     const isAuthenticated = !!accessToken;
+
+//     return (
+//         <AuthContext.Provider value={{ 
+//             accessToken, 
+//             setAccessToken, 
+//             user, 
+//             setUser, 
+//             isAuthenticated, 
+//             isLoading 
+//         }}>
+//             {/* القفل السحري: لا تظهر أي شيء حتى ينتهي الطلب الأول */}
+//             {isLoading ? (
+//                 <div className="loading-screen">جاري التحقق من الجلسة...</div>
+//             ) : (
+//                 children
+//             )}
+//         </AuthContext.Provider>
+//     );
+// };
+
+// export const useAuth = () => {
+//     const context = useContext(AuthContext);
+//     if (!context) {
+//         throw new Error("useAuth must be used within a AuthProvider");
+//     }
+//     return context;
+// }
+
+
+import { refreshTokenApi } from "@/api/auth";
+import { setStoredAccessToken } from "@/service/authToken";
+import type { UserData } from "@/Types";
+import { useQuery } from "@tanstack/react-query";
+import { createContext, useContext, useEffect, useMemo, useState } from "react";
 
 type AuthContextType = {
-    accessToken : string | null;
-    setAccessToken : (token:string)=> void
-    user :{} 
-}
-const AuthContext = createContext(undefined);
+  accessToken: string | null;
+  setAccessToken: (token: string | null) => void;
+  user: UserData | null;
+  setUser: (user: UserData | null) => void;
+  isAuthenticated: boolean;
+  isLoading: boolean;
+};
+
+const AuthContext = createContext<AuthContextType | undefined>(undefined);
+
+export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
+  const [accessToken, setAccessToken] = useState<string | null>(null);
+  const [user, setUser] = useState<UserData | null>(null);
+
+  // select transforms the response once — effect receives clean data or null
+  const { data, isLoading } = useQuery({
+    queryKey: ["authUser"],
+    queryFn: refreshTokenApi,
+    retry: false,
+    refetchOnWindowFocus: false,
+    staleTime: Infinity,
+    select: (res) => (res.success ? res.data : null),
+  });
+
+  useEffect(() => {
+    if (!data) return;
+    setAccessToken(data.token);
+    setUser(data);
+    setStoredAccessToken(data.token);
+  }, [data]);
+
+  const value = useMemo<AuthContextType>(
+    () => ({
+      accessToken,
+      setAccessToken,
+      user,
+      setUser,
+      isAuthenticated: !!accessToken,
+      isLoading,
+    }),
+    [accessToken, user, isLoading]
+  );
+
+  return (
+    <AuthContext.Provider value={value}>
+      {isLoading ? (
+        <div className="flex h-screen items-center justify-center">
+          <span className="text-muted-foreground text-sm">Verifying session...</span>
+        </div>
+      ) : (
+        children
+      )}
+    </AuthContext.Provider>
+  );
+};
+
+export const useAuth = () => {
+  const context = useContext(AuthContext);
+  if (!context) {
+    throw new Error("useAuth must be used within an AuthProvider");
+  }
+  return context;
+};

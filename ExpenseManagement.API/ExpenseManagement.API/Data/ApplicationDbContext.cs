@@ -11,8 +11,13 @@ namespace ExpenseManagement.API.Data
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options) { }
 
         public DbSet<Category> Categories { get; set; }
+        public DbSet<CategoryBudget> CategoryBudgets { get; set; }
         public DbSet<Expense> Expenses { get; set; }
+        public DbSet<RecurringExpense> RecurringExpenses { get; set; }
+        public DbSet<SavingsGoal> SavingsGoals { get; set; }
+        public DbSet<SurplusAllocation> SurplusAllocations { get; set; }
         public DbSet<RefreshToken> RefreshTokens { get; set; }
+        public DbSet<UserSession> UserSessions { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {

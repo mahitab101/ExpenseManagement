@@ -1,77 +1,320 @@
-import { createFileRoute, Link } from "@tanstack/react-router"
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import {
-    DollarSign,
-    TrendingUp,
-    Receipt,
+  DollarSign,
+  Award,
+  Calendar,
+  TrendingDown,
+  Plus,
 } from "lucide-react";
 
 import { MonthlyExpensesChart } from "@/components/charts/MonthlyExpensesChart";
-import { CategoryPieChart } from "@/components/charts/CategoryPieChart";
-import StatCard from "@/components/dashboard/StatCard";
 import { ActivityItem } from "@/components/dashboard/ActivityItem";
+import { useAuth } from "@/context/AuthContext";
+import { useDashboard } from "@/hooks/useDashboard";
+import StatCard from "@/components/dashboard/StateCard";
+import YearlyChart from "@/components/charts/YearlyChart";
+import { TopSpendingCategories } from "@/components/dashboard/TopSpendingCategories";
+import { SmartAlertsPanel } from "@/components/dashboard/SmartAlertsPanel";
+import { useState } from "react";
+import { MonthComparisonWidget } from "@/components/dashboard/MonthComparisonWidget";
+import { SavingsGoalProgress } from "@/components/savingGoal/SavingsGoalProgress";
 
 export const Route = createFileRoute("/dashboard/")({
-    component: DashboardPage,
+  component: DashboardPage,
 });
 
-function DashboardPage() {
-    return (
-<>
-            <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
+// ─── Skeleton Components ──────────────────────────────────────────────────────
 
-                <StatCard
-                    title="Total Expenses"
-                    value="$12,450"
-                    icon={DollarSign}
-                />
+function StatCardSkeleton() {
+  return (
+    <div className="p-5 rounded-2xl border border-slate-200 bg-white animate-pulse">
+      <div className="h-3 w-24 bg-slate-200 rounded mb-4" />
+      <div className="h-7 w-32 bg-slate-200 rounded mb-2" />
+      <div className="h-3 w-20 bg-slate-100 rounded" />
+    </div>
+  );
+}
 
-                <StatCard
-                    title="This Month"
-                    value="$2,340"
-                    icon={TrendingUp}
-                />
+function ChartSkeleton() {
+  return (
+    <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 animate-pulse">
+      <div className="h-4 w-36 bg-slate-200 rounded mb-2" />
+      <div className="h-3 w-24 bg-slate-100 rounded mb-6" />
+      <div className="flex items-end gap-3 h-48">
+        {[60, 85, 45, 90, 70, 55, 80].map((h, i) => (
+          <div
+            key={i}
+            className="flex-1 bg-slate-100 rounded-t"
+            style={{ height: `${h}%` }}
+          />
+        ))}
+      </div>
+    </div>
+  );
+}
 
-                <StatCard
-                    title="Transactions"
-                    value="124"
-                    icon={Receipt}
-                />
-            </div>
-            <div className="mt-8 grid grid-cols-1 gap-6 lg:grid-cols-2">
-                <MonthlyExpensesChart />
-                <CategoryPieChart />
-            </div>
-            {/* Activity */}
-            <div className="mt-10">
-                <h2 className="mb-4 text-lg font-semibold">
-                    Recent Activity
-                </h2>
-                <Link to="/dashboard/expense" className="text-sm text-primary hover:underline">
-                    View all
-                </Link>
+function ActivitySkeleton() {
+  return (
+    <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 animate-pulse">
+      <div className="h-4 w-32 bg-slate-200 rounded mb-5" />
+      {[1, 2, 3].map((i) => (
+        <div key={i} className="flex items-center gap-3 mb-4">
+          <div className="w-9 h-9 rounded-full bg-slate-100" />
+          <div className="flex-1">
+            <div className="h-3 w-28 bg-slate-200 rounded mb-1" />
+            <div className="h-2 w-16 bg-slate-100 rounded" />
+          </div>
+          <div className="h-3 w-14 bg-slate-100 rounded" />
+        </div>
+      ))}
+    </div>
+  );
+}
 
-                <div className="space-y-3">
-                    <ActivityItem
-                        title="Groceries"
-                        subtitle="Food · Today"
-                        amount={-120}
-                    />
+// ─── Empty State ──────────────────────────────────────────────────────────────
 
-                    <ActivityItem
-                        title="Electricity Bill"
-                        subtitle="Utilities · Yesterday"
-                        amount={-75}
-                    />
-
-                    <ActivityItem
-                        title="Salary"
-                        subtitle="Income · 2 days ago"
-                        amount={2500}
-                    />
-                </div>
-            </div>
-</>
-    );
+function EmptyActivity({ onAdd }: { onAdd: () => void }) {
+  return (
+    <div className="flex flex-col items-center justify-center py-10 text-center">
+      <div className="w-12 h-12 rounded-full bg-blue-50 flex items-center justify-center mb-3">
+        <DollarSign className="w-5 h-5 text-blue-400" />
+      </div>
+      <p className="text-sm font-medium text-gray-600 mb-1">No expenses yet</p>
+      <p className="text-xs text-gray-400 mb-4">Start tracking by adding your first expense</p>
+      <button
+        onClick={onAdd}
+        className="text-xs text-blue-600 font-medium hover:underline"
+      >
+        + Add your first expense
+      </button>
+    </div>
+  );
 }
 
 
+
+function GreetingHeader({
+  name,
+  onAdd,
+}: {
+  name?: string;
+  onAdd: () => void;
+}) {
+  const hour = new Date().getHours();
+  const greeting =
+    hour < 12 ? "Good morning" : hour < 17 ? "Good afternoon" : "Good evening";
+
+  const today = new Date().toLocaleDateString("en-US", {
+    weekday: "long",
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  });
+
+  return (
+    <div className="flex items-center justify-between mb-6">
+      <div>
+        <h1 className="text-xl font-bold text-gray-800">
+          {greeting}{name ? `, ${name.split(" ")[0]}` : ""} 👋
+        </h1>
+        <p className="text-sm text-gray-400 mt-0.5">{today}</p>
+      </div>
+       <button
+ className="flex items-center gap-2 px-5 py-2.5 bg-primary-gradient text-white text-sm font-semibold rounded-xl hover:scale-105 active:scale-95 transition-all duration-150 shadow-sm"
+  >
+  <Plus className="w-4 h-4" />
+      <Link to="/dashboard/expense">Add expense</Link>
+    </button>
+    </div>
+  );
+}
+
+// ─── Daily Average Stat Card data helper ─────────────────────────────────────
+
+function getDailyAverage(thisMonthExpense?: number) {
+  if (!thisMonthExpense) return undefined;
+  const dayOfMonth = new Date().getDate();
+  return Math.round(thisMonthExpense / dayOfMonth);
+}
+
+// ─── Main Page ────────────────────────────────────────────────────────────────
+
+function DashboardPage() {
+  const navigate = useNavigate();
+  const { user } = useAuth();
+  const [view, setView] = useState<"monthly" | "yearly">("monthly");
+  const [showAddModal, setShowAddModal] = useState(false);
+
+  const { data, isPending, error } = useDashboard();
+
+  if (!user) navigate({ to: "/login" });
+
+  const dailyAvg = getDailyAverage(data?.summary.thisMonthExpense);
+
+  const todayExpenses = data?.recentExpenses?.today ?? [];
+  const yesterdayExpenses = data?.recentExpenses?.yesterday ?? [];
+
+  return (
+    <div>
+      {/* Greeting + Quick Add */}
+      <GreetingHeader
+        name={user?.userName ?? "Guest"}
+        onAdd={() => setShowAddModal(true)}
+      />
+
+      {/* Stat Cards */}
+     <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+  {isPending ? (
+    Array.from({ length: 4 }).map((_, i) => <StatCardSkeleton key={i} />)
+  ) : (
+    <>
+      <StatCard
+        accent                             
+        title="Total Expense"
+        value={data?.summary.totalExpense}
+        icon={<DollarSign size={16} className="text-white" />}
+        footer="Overall spending"
+      />
+      <StatCard
+        title="This Month"
+        value={data?.summary.thisMonthExpense}
+        icon={<Calendar size={16} className="text-purple-500" />}
+        trend={data?.summary.percentageChange}
+        isExpenseTrend
+        footer="vs last month"
+      />
+      <StatCard
+        title="Top Category"
+        value={data?.summary.topCategoryAmount}
+        subtitle={data?.summary.topCategoryName}
+        icon={<Award size={16} className="text-amber-500" />}
+      />
+      <StatCard
+        title="Daily Average"
+        value={dailyAvg}
+        subtitle={`Day ${new Date().getDate()} of ${new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0).getDate()}`}
+        icon={<TrendingDown size={16} className="text-rose-500" />}
+        footer="This month so far"
+      />
+    </>
+  )}
+</div>
+
+      {/* Charts + Activity */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+        {/* Charts (2/3 width) */}
+        {isPending ? (
+          <div className="lg:col-span-2">
+            <ChartSkeleton />
+          </div>
+        ) : (
+          <div className="lg:col-span-2 bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+            <div className="flex items-center justify-between mb-6">
+              <div>
+                <h3 className="text-lg font-semibold text-gray-800">Spending Trends</h3>
+                <p className="text-sm text-gray-400">
+                  {view === "monthly" ? "Monthly" : "Yearly"}
+                </p>
+              </div>
+              <div className="p-1 rounded-full flex bg-slate-100">
+                <button
+                  onClick={() => setView("monthly")}
+                  className={`px-4 py-1.5 text-xs font-medium rounded-full transition-all ${
+                    view === "monthly"
+                      ? "bg-primary-gradient text-white shadow"
+                      : "text-gray-500"
+                  }`}
+                >
+                  Monthly
+                </button>
+                <button
+                  onClick={() => setView("yearly")}
+                  className={`px-4 py-1.5 text-xs font-medium rounded-full transition-all ${
+                    view === "yearly"
+                      ? "bg-primary-gradient text-white shadow"
+                      : "text-gray-500"
+                  }`}
+                >
+                  Yearly
+                </button>
+              </div>
+            </div>
+
+            {view === "monthly" ? (
+              <MonthlyExpensesChart monthlyCharts={data?.monthlyCharts ?? []} />
+            ) : (
+              <YearlyChart yearlyCharts={data?.yearlyCharts ?? []} />
+            )}
+          </div>
+        )}
+
+             <MonthComparisonWidget
+  thisMonth={data?.summary.thisMonthExpense ?? 0}
+  lastMonth={data?.summary.lastMonthTotal ?? 0}
+  topCategories={data?.topCategories ?? []}
+/>
+      </div>
+
+      {/* Bottom row: Top Categories · Smart Alerts · Savings Goals */}
+      {!isPending && (
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-6">
+          <TopSpendingCategories
+           categories={data?.topCategories ?? []}
+          />
+          <SmartAlertsPanel
+            alerts={data?.alerts ?? []}
+          />
+          <SavingsGoalProgress />
+  
+        </div>
+      
+      )}
+  {/* Recent Activity (1/3 width) */}
+        {isPending ? (
+          <ActivitySkeleton />
+        ) : (
+          <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 mt-6">
+            <h3 className="text-lg font-semibold mb-4">Recent Activity</h3>
+
+            <p className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">
+              Today
+            </p>
+            {todayExpenses.length > 0 ? (
+              <div className="space-y-3">
+                {todayExpenses.map((exp: any, i: number) => (
+                  <ActivityItem
+                    key={i}
+                    title={exp.title}
+                    subtitle={exp.categoryName}
+                    amount={-exp.amount}
+                  />
+                ))}
+              </div>
+            ) : (
+              <EmptyActivity onAdd={() => setShowAddModal(true)} />
+            )}
+
+            {yesterdayExpenses.length > 0 && (
+              <>
+                <p className="text-xs font-bold text-gray-400 uppercase tracking-wider mt-6 mb-3">
+                  Yesterday
+                </p>
+                <div className="space-y-3">
+                  {yesterdayExpenses.map((exp: any, i: number) => (
+                    <ActivityItem
+                      key={i}
+                      title={exp.title}
+                      subtitle={exp.categoryName}
+                      amount={-exp.amount}
+                    />
+                  ))}
+                </div>
+              </>
+            )}
+          </div>
+        )}
+    
+    </div>
+  );
+}

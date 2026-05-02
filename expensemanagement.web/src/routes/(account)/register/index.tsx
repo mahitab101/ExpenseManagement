@@ -2,7 +2,7 @@ import { AuthLayout } from '@/components/auth/AuthLayout'
 import RegisterForm from '@/components/auth/RegisterForm'
 import { createFileRoute } from '@tanstack/react-router'
 
-export const Route = createFileRoute('/account/register/')({
+export const Route = createFileRoute('/(account)/register/')({
   component: RegisterPage,
 })
 

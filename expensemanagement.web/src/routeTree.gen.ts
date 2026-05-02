@@ -12,10 +12,16 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as DashboardRouteRouteImport } from './routes/dashboard/route'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as DashboardIndexRouteImport } from './routes/dashboard/index'
+import { Route as accountVerifyEmailRouteImport } from './routes/(account)/verify-email'
+import { Route as accountConfirmEmailRouteImport } from './routes/(account)/confirm-email'
+import { Route as DashboardSavingsIndexRouteImport } from './routes/dashboard/savings/index'
+import { Route as DashboardReportIndexRouteImport } from './routes/dashboard/report/index'
+import { Route as DashboardRecurringIndexRouteImport } from './routes/dashboard/recurring/index'
 import { Route as DashboardExpenseIndexRouteImport } from './routes/dashboard/expense/index'
 import { Route as DashboardCategoryIndexRouteImport } from './routes/dashboard/category/index'
-import { Route as AccountRegisterIndexRouteImport } from './routes/account/register/index'
-import { Route as AccountLoginIndexRouteImport } from './routes/account/login/index'
+import { Route as accountRegisterIndexRouteImport } from './routes/(account)/register/index'
+import { Route as accountLoginIndexRouteImport } from './routes/(account)/login/index'
+import { Route as DashboardUserProfileIndexRouteImport } from './routes/dashboard/user/profile/index'
 
 const DashboardRouteRoute = DashboardRouteRouteImport.update({
   id: '/dashboard',
@@ -32,6 +38,31 @@ const DashboardIndexRoute = DashboardIndexRouteImport.update({
   path: '/',
   getParentRoute: () => DashboardRouteRoute,
 } as any)
+const accountVerifyEmailRoute = accountVerifyEmailRouteImport.update({
+  id: '/(account)/verify-email',
+  path: '/verify-email',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const accountConfirmEmailRoute = accountConfirmEmailRouteImport.update({
+  id: '/(account)/confirm-email',
+  path: '/confirm-email',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DashboardSavingsIndexRoute = DashboardSavingsIndexRouteImport.update({
+  id: '/savings/',
+  path: '/savings/',
+  getParentRoute: () => DashboardRouteRoute,
+} as any)
+const DashboardReportIndexRoute = DashboardReportIndexRouteImport.update({
+  id: '/report/',
+  path: '/report/',
+  getParentRoute: () => DashboardRouteRoute,
+} as any)
+const DashboardRecurringIndexRoute = DashboardRecurringIndexRouteImport.update({
+  id: '/recurring/',
+  path: '/recurring/',
+  getParentRoute: () => DashboardRouteRoute,
+} as any)
 const DashboardExpenseIndexRoute = DashboardExpenseIndexRouteImport.update({
   id: '/expense/',
   path: '/expense/',
@@ -42,78 +73,122 @@ const DashboardCategoryIndexRoute = DashboardCategoryIndexRouteImport.update({
   path: '/category/',
   getParentRoute: () => DashboardRouteRoute,
 } as any)
-const AccountRegisterIndexRoute = AccountRegisterIndexRouteImport.update({
-  id: '/account/register/',
-  path: '/account/register/',
+const accountRegisterIndexRoute = accountRegisterIndexRouteImport.update({
+  id: '/(account)/register/',
+  path: '/register/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AccountLoginIndexRoute = AccountLoginIndexRouteImport.update({
-  id: '/account/login/',
-  path: '/account/login/',
+const accountLoginIndexRoute = accountLoginIndexRouteImport.update({
+  id: '/(account)/login/',
+  path: '/login/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const DashboardUserProfileIndexRoute =
+  DashboardUserProfileIndexRouteImport.update({
+    id: '/user/profile/',
+    path: '/user/profile/',
+    getParentRoute: () => DashboardRouteRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/dashboard': typeof DashboardRouteRouteWithChildren
+  '/confirm-email': typeof accountConfirmEmailRoute
+  '/verify-email': typeof accountVerifyEmailRoute
   '/dashboard/': typeof DashboardIndexRoute
-  '/account/login': typeof AccountLoginIndexRoute
-  '/account/register': typeof AccountRegisterIndexRoute
+  '/login': typeof accountLoginIndexRoute
+  '/register': typeof accountRegisterIndexRoute
   '/dashboard/category': typeof DashboardCategoryIndexRoute
   '/dashboard/expense': typeof DashboardExpenseIndexRoute
+  '/dashboard/recurring': typeof DashboardRecurringIndexRoute
+  '/dashboard/report': typeof DashboardReportIndexRoute
+  '/dashboard/savings': typeof DashboardSavingsIndexRoute
+  '/dashboard/user/profile': typeof DashboardUserProfileIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/confirm-email': typeof accountConfirmEmailRoute
+  '/verify-email': typeof accountVerifyEmailRoute
   '/dashboard': typeof DashboardIndexRoute
-  '/account/login': typeof AccountLoginIndexRoute
-  '/account/register': typeof AccountRegisterIndexRoute
+  '/login': typeof accountLoginIndexRoute
+  '/register': typeof accountRegisterIndexRoute
   '/dashboard/category': typeof DashboardCategoryIndexRoute
   '/dashboard/expense': typeof DashboardExpenseIndexRoute
+  '/dashboard/recurring': typeof DashboardRecurringIndexRoute
+  '/dashboard/report': typeof DashboardReportIndexRoute
+  '/dashboard/savings': typeof DashboardSavingsIndexRoute
+  '/dashboard/user/profile': typeof DashboardUserProfileIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/dashboard': typeof DashboardRouteRouteWithChildren
+  '/(account)/confirm-email': typeof accountConfirmEmailRoute
+  '/(account)/verify-email': typeof accountVerifyEmailRoute
   '/dashboard/': typeof DashboardIndexRoute
-  '/account/login/': typeof AccountLoginIndexRoute
-  '/account/register/': typeof AccountRegisterIndexRoute
+  '/(account)/login/': typeof accountLoginIndexRoute
+  '/(account)/register/': typeof accountRegisterIndexRoute
   '/dashboard/category/': typeof DashboardCategoryIndexRoute
   '/dashboard/expense/': typeof DashboardExpenseIndexRoute
+  '/dashboard/recurring/': typeof DashboardRecurringIndexRoute
+  '/dashboard/report/': typeof DashboardReportIndexRoute
+  '/dashboard/savings/': typeof DashboardSavingsIndexRoute
+  '/dashboard/user/profile/': typeof DashboardUserProfileIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
     | '/dashboard'
+    | '/confirm-email'
+    | '/verify-email'
     | '/dashboard/'
-    | '/account/login'
-    | '/account/register'
+    | '/login'
+    | '/register'
     | '/dashboard/category'
     | '/dashboard/expense'
+    | '/dashboard/recurring'
+    | '/dashboard/report'
+    | '/dashboard/savings'
+    | '/dashboard/user/profile'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/confirm-email'
+    | '/verify-email'
     | '/dashboard'
-    | '/account/login'
-    | '/account/register'
+    | '/login'
+    | '/register'
     | '/dashboard/category'
     | '/dashboard/expense'
+    | '/dashboard/recurring'
+    | '/dashboard/report'
+    | '/dashboard/savings'
+    | '/dashboard/user/profile'
   id:
     | '__root__'
     | '/'
     | '/dashboard'
+    | '/(account)/confirm-email'
+    | '/(account)/verify-email'
     | '/dashboard/'
-    | '/account/login/'
-    | '/account/register/'
+    | '/(account)/login/'
+    | '/(account)/register/'
     | '/dashboard/category/'
     | '/dashboard/expense/'
+    | '/dashboard/recurring/'
+    | '/dashboard/report/'
+    | '/dashboard/savings/'
+    | '/dashboard/user/profile/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   DashboardRouteRoute: typeof DashboardRouteRouteWithChildren
-  AccountLoginIndexRoute: typeof AccountLoginIndexRoute
-  AccountRegisterIndexRoute: typeof AccountRegisterIndexRoute
+  accountConfirmEmailRoute: typeof accountConfirmEmailRoute
+  accountVerifyEmailRoute: typeof accountVerifyEmailRoute
+  accountLoginIndexRoute: typeof accountLoginIndexRoute
+  accountRegisterIndexRoute: typeof accountRegisterIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -139,6 +214,41 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardIndexRouteImport
       parentRoute: typeof DashboardRouteRoute
     }
+    '/(account)/verify-email': {
+      id: '/(account)/verify-email'
+      path: '/verify-email'
+      fullPath: '/verify-email'
+      preLoaderRoute: typeof accountVerifyEmailRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/(account)/confirm-email': {
+      id: '/(account)/confirm-email'
+      path: '/confirm-email'
+      fullPath: '/confirm-email'
+      preLoaderRoute: typeof accountConfirmEmailRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/dashboard/savings/': {
+      id: '/dashboard/savings/'
+      path: '/savings'
+      fullPath: '/dashboard/savings'
+      preLoaderRoute: typeof DashboardSavingsIndexRouteImport
+      parentRoute: typeof DashboardRouteRoute
+    }
+    '/dashboard/report/': {
+      id: '/dashboard/report/'
+      path: '/report'
+      fullPath: '/dashboard/report'
+      preLoaderRoute: typeof DashboardReportIndexRouteImport
+      parentRoute: typeof DashboardRouteRoute
+    }
+    '/dashboard/recurring/': {
+      id: '/dashboard/recurring/'
+      path: '/recurring'
+      fullPath: '/dashboard/recurring'
+      preLoaderRoute: typeof DashboardRecurringIndexRouteImport
+      parentRoute: typeof DashboardRouteRoute
+    }
     '/dashboard/expense/': {
       id: '/dashboard/expense/'
       path: '/expense'
@@ -153,19 +263,26 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardCategoryIndexRouteImport
       parentRoute: typeof DashboardRouteRoute
     }
-    '/account/register/': {
-      id: '/account/register/'
-      path: '/account/register'
-      fullPath: '/account/register'
-      preLoaderRoute: typeof AccountRegisterIndexRouteImport
+    '/(account)/register/': {
+      id: '/(account)/register/'
+      path: '/register'
+      fullPath: '/register'
+      preLoaderRoute: typeof accountRegisterIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/account/login/': {
-      id: '/account/login/'
-      path: '/account/login'
-      fullPath: '/account/login'
-      preLoaderRoute: typeof AccountLoginIndexRouteImport
+    '/(account)/login/': {
+      id: '/(account)/login/'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof accountLoginIndexRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/dashboard/user/profile/': {
+      id: '/dashboard/user/profile/'
+      path: '/user/profile'
+      fullPath: '/dashboard/user/profile'
+      preLoaderRoute: typeof DashboardUserProfileIndexRouteImport
+      parentRoute: typeof DashboardRouteRoute
     }
   }
 }
@@ -174,12 +291,20 @@ interface DashboardRouteRouteChildren {
   DashboardIndexRoute: typeof DashboardIndexRoute
   DashboardCategoryIndexRoute: typeof DashboardCategoryIndexRoute
   DashboardExpenseIndexRoute: typeof DashboardExpenseIndexRoute
+  DashboardRecurringIndexRoute: typeof DashboardRecurringIndexRoute
+  DashboardReportIndexRoute: typeof DashboardReportIndexRoute
+  DashboardSavingsIndexRoute: typeof DashboardSavingsIndexRoute
+  DashboardUserProfileIndexRoute: typeof DashboardUserProfileIndexRoute
 }
 
 const DashboardRouteRouteChildren: DashboardRouteRouteChildren = {
   DashboardIndexRoute: DashboardIndexRoute,
   DashboardCategoryIndexRoute: DashboardCategoryIndexRoute,
   DashboardExpenseIndexRoute: DashboardExpenseIndexRoute,
+  DashboardRecurringIndexRoute: DashboardRecurringIndexRoute,
+  DashboardReportIndexRoute: DashboardReportIndexRoute,
+  DashboardSavingsIndexRoute: DashboardSavingsIndexRoute,
+  DashboardUserProfileIndexRoute: DashboardUserProfileIndexRoute,
 }
 
 const DashboardRouteRouteWithChildren = DashboardRouteRoute._addFileChildren(
@@ -189,8 +314,10 @@ const DashboardRouteRouteWithChildren = DashboardRouteRoute._addFileChildren(
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   DashboardRouteRoute: DashboardRouteRouteWithChildren,
-  AccountLoginIndexRoute: AccountLoginIndexRoute,
-  AccountRegisterIndexRoute: AccountRegisterIndexRoute,
+  accountConfirmEmailRoute: accountConfirmEmailRoute,
+  accountVerifyEmailRoute: accountVerifyEmailRoute,
+  accountLoginIndexRoute: accountLoginIndexRoute,
+  accountRegisterIndexRoute: accountRegisterIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

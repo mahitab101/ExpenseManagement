@@ -1,16 +1,25 @@
 ﻿using ExpenseManagement.API.Contracts;
 using ExpenseManagement.API.Data;
 using ExpenseManagement.API.DTOs.Expense;
+using ExpenseManagement.API.Hubs;
 using ExpenseManagement.API.Models;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 
 public class ExpenseRepository : IExpenseRepository
 {
     private readonly ApplicationDbContext _context;
+    private readonly IHubContext<NotificationHub> _hubContext;
+    private readonly ICategoryBudgetRepository _budgetRepository;
 
-    public ExpenseRepository(ApplicationDbContext context)
+    public ExpenseRepository(
+        ApplicationDbContext context,
+        IHubContext<NotificationHub> hubContext,
+        ICategoryBudgetRepository budgetRepository)
     {
         _context = context;
+        _hubContext = hubContext;
+        _budgetRepository = budgetRepository;
     }
 
     public async Task<IEnumerable<ExpenseDto>> GetAllExpenses(string userId)
@@ -23,6 +32,7 @@ public class ExpenseRepository : IExpenseRepository
                 Id = e.Id,
                 Title = e.Title,
                 Amount = e.Amount,
+                CategoryId = e.CategoryId,
                 CategoryName = e.Category.CategoryName,
                 Date = e.Date
             }).ToListAsync();
@@ -60,6 +70,10 @@ public class ExpenseRepository : IExpenseRepository
         _context.Expenses.Add(expense);
         await _context.SaveChangesAsync();
 
+        // Check monthly budget for the month the expense belongs to
+        await _budgetRepository.CheckAndNotifyMonthlyBudget(
+            dto.CategoryId, dto.Date.Month, dto.Date.Year, userId);
+
         return new ExpenseDto
         {
             Id = expense.Id,
@@ -72,7 +86,10 @@ public class ExpenseRepository : IExpenseRepository
 
     public async Task<bool> UpdateExpense(int id, CreateExpenseDto dto, string userId)
     {
-        var expense = await _context.Expenses.FirstOrDefaultAsync(e => e.Id == id && e.UserId == userId);
+        var expense = await _context.Expenses
+            .AsNoTracking()
+            .FirstOrDefaultAsync(e => e.Id == id && e.UserId == userId);
+
         if (expense == null) return false;
 
         expense.Title = dto.Title;
@@ -83,12 +100,19 @@ public class ExpenseRepository : IExpenseRepository
 
         _context.Expenses.Update(expense);
         await _context.SaveChangesAsync();
+
+        // Re-check budget for the expense's month
+        await _budgetRepository.CheckAndNotifyMonthlyBudget(
+            dto.CategoryId, dto.Date.Month, dto.Date.Year, userId);
+
         return true;
     }
 
     public async Task<bool> DeleteExpense(int id, string userId)
     {
-        var expense = await _context.Expenses.FirstOrDefaultAsync(e => e.Id == id && e.UserId == userId);
+        var expense = await _context.Expenses
+            .FirstOrDefaultAsync(e => e.Id == id && e.UserId == userId);
+
         if (expense == null) return false;
 
         expense.IsDelete = true;
