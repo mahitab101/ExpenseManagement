@@ -45,6 +45,8 @@ namespace ExpenseManagement.API.Repositories
             var isValid = await _userManager.CheckPasswordAsync(user, password);
             if (!isValid) return null;
 
+            if(!user.EmailConfirmed) return null;
+
             // get user role
             var roles = await _userManager.GetRolesAsync(user);
             var role = roles.FirstOrDefault() ?? "User";
@@ -153,7 +155,7 @@ namespace ExpenseManagement.API.Repositories
                 FirstName = registerDto.FirstName,
                 LastName = registerDto.LastName,
                 Email = registerDto.Email,
-                UserName = registerDto.Email
+                UserName = registerDto.Email,
             };
 
             var createResult = await _userManager.CreateAsync(user, registerDto.Password);
@@ -162,8 +164,8 @@ namespace ExpenseManagement.API.Repositories
                 var errors = string.Join(", ", createResult.Errors.Select(e => e.Description));
                 return new RegisterResult(false, errors, false);
             }
-
-            var roleResult = await _userManager.AddToRoleAsync(user, registerDto.Role);
+           
+            var roleResult = await _userManager.AddToRoleAsync(user, "User");
             if (!roleResult.Succeeded)
             {
                 var errors = string.Join(", ", roleResult.Errors.Select(e => e.Description));

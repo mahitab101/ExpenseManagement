@@ -87,7 +87,7 @@ namespace ExpenseManagement.API.Controllers
                 ));
         }
 
-        [HttpPut("delete/{id}")]
+        [HttpDelete("delete/{id}")]
         public async Task<IActionResult> Delete(int id)
         {
             var userId = User.GetUserId();

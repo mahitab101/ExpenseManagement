@@ -23,8 +23,6 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 using var conn = new SqlConnection(builder.Configuration.GetConnectionString("defaultConnection"));
-conn.Open();
-Console.WriteLine("Connected successfully!");
 
 // connection string
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
