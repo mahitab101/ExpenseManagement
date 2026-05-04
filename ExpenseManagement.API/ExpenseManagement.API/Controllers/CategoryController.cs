@@ -1,12 +1,12 @@
-﻿using AutoMapper;
+using AutoMapper;
 using ExpenseManagement.API.Contracts;
 using ExpenseManagement.API.DTOs.category;
 using ExpenseManagement.API.Helper;
 using ExpenseManagement.API.Models;
+using ExpenseManagement.API.Resources;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using System.Security.Claims;
+using Microsoft.Extensions.Localization;
 
 namespace ExpenseManagement.API.Controllers
 {
@@ -17,123 +17,80 @@ namespace ExpenseManagement.API.Controllers
     {
         private readonly ICategoryRepository _categoryRepository;
         private readonly IMapper _mapper;
+        private readonly IStringLocalizer<SharedResource> _localizer;
 
-        public CategoryController(ICategoryRepository categoryRepository, IMapper mapper)
+        public CategoryController(
+            ICategoryRepository categoryRepository,
+            IMapper mapper,
+            IStringLocalizer<SharedResource> localizer)
         {
             _categoryRepository = categoryRepository;
-            _mapper = mapper;
+            _mapper             = mapper;
+            _localizer          = localizer;
         }
 
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var userId     = User.GetUserId();
             var categories = await _categoryRepository.GetAllAsync(userId);
             if (categories == null || !categories.Any())
-            {
-                return NotFound(new ApiResponse<object>(
-                    false,
-                    "No categories found.",
-                    null
-                ));
-            }
+                return NotFound(new ApiResponse<object>(false, _localizer["no_categories_found"], null));
 
-            var mappedCategories = _mapper.Map<IEnumerable<CategoryDto>>(categories);
-
-            return Ok(new ApiResponse<IEnumerable<CategoryDto>>(
-               true,
-               "Categories retrieved successfully.",
-               mappedCategories
-           ));
-
+            var mapped = _mapper.Map<IEnumerable<CategoryDto>>(categories);
+            return Ok(new ApiResponse<IEnumerable<CategoryDto>>(true, _localizer["categories_retrieved"], mapped));
         }
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
         {
-            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var userId   = User.GetUserId();
             var category = await _categoryRepository.GetByIdAsync(id, userId);
             if (category == null)
-            {
-                return NotFound(new ApiResponse<object>(
-                    false,
-                    "Category not found.",
-                    null
-                ));
-            }
-            var mappedCategory = _mapper.Map<CategoryDto>(category);
-            return Ok(new ApiResponse<CategoryDto>(
-               true,
-               "Category retrieved successfully.",
-               mappedCategory
-           ));
+                return NotFound(new ApiResponse<object>(false, _localizer["category_not_found"], null));
+
+            var mapped = _mapper.Map<CategoryDto>(category);
+            return Ok(new ApiResponse<CategoryDto>(true, _localizer["category_retrieved"], mapped));
         }
 
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] CreateCategoryDto createCategoryDto)
         {
-            Console.WriteLine("Auth Type: " + User.Identity?.AuthenticationType);
-            Console.WriteLine("Is Authenticated: " + User.Identity?.IsAuthenticated);
-            Console.WriteLine("Claims Count: " + User.Claims.Count());
-
-            //var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;- User.FindFirstValue(ClaimTypes.NameIdentifier);
             var userId = User.GetUserId();
             if (userId == null)
-            {
-                return Unauthorized("User not found");
-            }
+                return Unauthorized();
+
             var category = _mapper.Map<Category>(createCategoryDto);
             category.UserId = userId;
+
             var result = await _categoryRepository.AddAsync(category);
             if (!result)
-            {
-                return BadRequest(new ApiResponse<object>(
-                    false,
-                    "Failed to create category.",
-                    null
-                ));
-            }
-            var mappedCategory = _mapper.Map<CategoryDto>(category);
-            return Ok(new ApiResponse<CategoryDto>(
-               true,
-               "Category created successfully.",
-               mappedCategory
-           ));
+                return BadRequest(new ApiResponse<object>(false, _localizer["category_create_failed"], null));
+
+            var mapped = _mapper.Map<CategoryDto>(category);
+            return Ok(new ApiResponse<CategoryDto>(true, _localizer["category_created"], mapped));
         }
 
         [HttpPut("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
-            var userId = User.GetUserId();
+            var userId    = User.GetUserId();
             var isDeleted = await _categoryRepository.DeleteAsync(id, userId);
             if (!isDeleted)
-            {
-                return BadRequest(new ApiResponse<object>(
-                    false,
-                    "Failed to delete category.",
-                    null
-                ));
-            }
-            return Ok(new ApiResponse<object>(
-               true,
-               "Category deleted successfully.",
-               null
-           ));
+                return BadRequest(new ApiResponse<object>(false, _localizer["category_delete_failed"], null));
+
+            return Ok(new ApiResponse<object>(true, _localizer["category_deleted"], null));
         }
 
         [HttpPut("Update/{id}")]
         public async Task<IActionResult> Update(int id, [FromBody] UpdateCategoryDto updateDto)
         {
-            var userId = User.GetUserId();
+            var userId    = User.GetUserId();
             var isUpdated = await _categoryRepository.UpdateAsync(id, updateDto, userId);
-
             if (!isUpdated)
-            {
-                return BadRequest(new ApiResponse<object>(false, "Failed to update category.", null));
-            }
+                return BadRequest(new ApiResponse<object>(false, _localizer["category_update_failed"], null));
 
-            return Ok(new ApiResponse<object>(true, "Category updated successfully.", null));
+            return Ok(new ApiResponse<object>(true, _localizer["category_updated"], null));
         }
-
     }
 }

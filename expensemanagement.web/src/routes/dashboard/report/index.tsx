@@ -1,18 +1,19 @@
-import { useState } from "react";
+import {  useState } from "react";
 import Heading from '@/components/ui/Heading';
 import { createFileRoute } from '@tanstack/react-router';
 import { analyzeExpensesApi } from "../../../api/auth";
-import { useExpense } from "@/hooks/useExpense";
 import {
   PieChart, Pie, Cell, Tooltip, ResponsiveContainer,
   BarChart, XAxis, YAxis, Legend, Bar
 } from "recharts";
 import { useQuery } from "@tanstack/react-query";
-import { ChevronLeft, ChevronRight, Sparkles } from "lucide-react";
+import { Sparkles } from "lucide-react";
 import BurnRate from "@/components/expence/BurnRate";
 import { getMonthlySummary } from "@/api/expense";
 import { ExportButton } from "@/components/expence/ExportButton";
 import MonthNavigator from "@/components/common/MonthNavigator";
+import { useExpenses } from "@/hooks/useExpenses";
+import { t } from "i18next";
 
 export const Route = createFileRoute('/dashboard/report/')({
   component: ReportPage,
@@ -36,7 +37,7 @@ const MONTH_NAMES = [
 function ReportPage() {
   const [aiData, setAiData] = useState<AIResponse | null>(null);
   const [loading, setLoading] = useState(false);
-  const { expenses } = useExpense();
+const {expenses} = useExpenses();
 
   // Month state
   const now = new Date();
@@ -130,12 +131,15 @@ function ReportPage() {
   return (
     <div>
       {/* Header */}
-<div className="flex items-start justify-between mb-6 flex-wrap gap-4">
+  <div className="flex items-start justify-between mb-6 flex-wrap gap-4">
   <div>
-    <h1 className="text-xl font-bold text-gray-800">Financial Reports</h1>
-    <p className="text-sm text-gray-400 mt-0.5">
+  <Heading
+    HeadTitle={t("report.title")}
+    SubTitle={`${t("report.subtitle")} ${MONTH_NAMES[month - 1]} ${year}`}
+  />
+    {/* <p className="text-sm text-gray-400 mt-0.5">
       Insights and analysis for {MONTH_NAMES[month - 1]} {year}
-    </p>
+    </p> */}
   </div>
   <div className="flex items-center gap-2 flex-wrap">
     <MonthNavigator month={month} year={year} onPrev={handlePrev} onNext={handleNext} />
@@ -265,7 +269,7 @@ function ReportPage() {
               innerRadius={52}
               paddingAngle={3}
             >
-              {chartData.map((_entry, index) => (
+              {chartData.map((_entry: any, index: number) => (
                 <Cell key={index} fill={COLORS[index % COLORS.length]} />
               ))}
             </Pie>

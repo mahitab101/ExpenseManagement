@@ -1,5 +1,6 @@
 import { TrendingUp, TrendingDown, Minus } from "lucide-react";
 import type { TopCategoryDto } from "@/Types";
+import { useTranslation } from "react-i18next";
 
 type Props = {
   thisMonth: number;
@@ -8,6 +9,8 @@ type Props = {
 };
 
 export function MonthComparisonWidget({ thisMonth, lastMonth, topCategories }: Props) {
+  const { t, i18n } = useTranslation();
+
   const diff = thisMonth - lastMonth;
   const pct = lastMonth > 0 ? Math.round((diff / lastMonth) * 100) : 0;
   const isUp = diff > 0;
@@ -17,10 +20,10 @@ export function MonthComparisonWidget({ thisMonth, lastMonth, topCategories }: P
   const trendColor = isFlat ? "text-gray-400" : isUp ? "text-red-500" : "text-green-500";
   const trendBg = isFlat ? "bg-gray-50" : isUp ? "bg-red-50" : "bg-green-50";
 
+  const locale = i18n.language === "ar" ? "ar-SA" : "en-US";
   const now = new Date();
-  const thisMonthName = now.toLocaleString("en-US", { month: "long" });
-  const lastMonthName = new Date(now.getFullYear(), now.getMonth() - 1)
-    .toLocaleString("en-US", { month: "long" });
+  const thisMonthName = now.toLocaleString(locale, { month: "long" });
+  const lastMonthName = new Date(now.getFullYear(), now.getMonth() - 1).toLocaleString(locale, { month: "long" });
 
   const maxAmount = topCategories[0]?.amount ?? 1;
 
@@ -29,13 +32,19 @@ export function MonthComparisonWidget({ thisMonth, lastMonth, topCategories }: P
       {/* Header */}
       <div className="flex items-center justify-between mb-5">
         <div>
-          <h3 className="text-sm font-semibold text-gray-800">Month Comparison</h3>
-          <p className="text-xs text-gray-400 mt-0.5">{lastMonthName} vs {thisMonthName}</p>
+          <h3 className="text-sm font-semibold text-gray-800">
+            {t("dashboard.monthComparison.title")}
+          </h3>
+          <p className="text-xs text-gray-400 mt-0.5">
+            {lastMonthName} vs {thisMonthName}
+          </p>
         </div>
         <div className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full ${trendBg}`}>
           <TrendIcon className={`w-3.5 h-3.5 ${trendColor}`} />
           <span className={`text-xs font-bold ${trendColor}`}>
-            {isFlat ? "No change" : `${Math.abs(pct)}% ${isUp ? "more" : "less"}`}
+            {isFlat
+              ? t("dashboard.monthComparison.noChange")
+              : `${Math.abs(pct)}% ${isUp ? t("dashboard.monthComparison.more") : t("dashboard.monthComparison.less")}`}
           </span>
         </div>
       </div>
@@ -43,11 +52,15 @@ export function MonthComparisonWidget({ thisMonth, lastMonth, topCategories }: P
       {/* Totals comparison */}
       <div className="grid grid-cols-2 gap-3 mb-5">
         <div className="bg-slate-50 rounded-xl p-3">
-          <p className="text-[10px] text-gray-400 uppercase tracking-wide mb-1">{lastMonthName}</p>
+          <p className="text-[10px] text-gray-400 uppercase tracking-wide mb-1">
+            {lastMonthName}
+          </p>
           <p className="text-lg font-bold text-gray-500">${lastMonth.toLocaleString()}</p>
         </div>
         <div className="bg-blue-50 rounded-xl p-3">
-          <p className="text-[10px] text-blue-400 uppercase tracking-wide mb-1">{thisMonthName}</p>
+          <p className="text-[10px] text-blue-400 uppercase tracking-wide mb-1">
+            {thisMonthName}
+          </p>
           <p className="text-lg font-bold text-blue-700">${thisMonth.toLocaleString()}</p>
         </div>
       </div>
@@ -56,26 +69,25 @@ export function MonthComparisonWidget({ thisMonth, lastMonth, topCategories }: P
       <div className={`rounded-xl px-4 py-2.5 mb-5 flex items-center justify-between ${trendBg}`}>
         <span className="text-xs text-gray-500">
           {isFlat
-            ? "Same spending as last month"
+            ? t("dashboard.monthComparison.sameSpending")
             : isUp
-            ? "You spent more this month"
-            : "You saved this month"}
+            ? t("dashboard.monthComparison.spentMore")
+            : t("dashboard.monthComparison.saved")}
         </span>
         <span className={`text-sm font-bold ${trendColor}`}>
           {isUp ? "+" : "-"}${Math.abs(diff).toLocaleString()}
         </span>
       </div>
 
-      {/* Category bars — real icon + color */}
+      {/* Category bars */}
       {topCategories.length > 0 && (
         <>
           <p className="text-[10px] text-gray-400 uppercase tracking-wide mb-3">
-            This month by category
+            {t("dashboard.monthComparison.byCategory")}
           </p>
           <div className="flex flex-col gap-3">
             {topCategories.map((cat) => {
               const barWidth = Math.round((cat.amount / maxAmount) * 100);
-
               return (
                 <div key={cat.categoryId}>
                   <div className="flex items-center justify-between mb-1">
@@ -86,7 +98,9 @@ export function MonthComparisonWidget({ thisMonth, lastMonth, topCategories }: P
                       >
                         {cat.icon}
                       </span>
-                      <span className="text-xs text-gray-600 font-medium">{cat.categoryName}</span>
+                      <span className="text-xs text-gray-600 font-medium">
+                        {cat.categoryName}
+                      </span>
                     </div>
                     <div className="flex items-center gap-2">
                       <span className="text-[10px] text-gray-400">{cat.percentage}%</span>

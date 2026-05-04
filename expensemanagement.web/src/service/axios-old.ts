@@ -1,32 +1,28 @@
 import axios from "axios";
 import { getStoredAccessToken } from "./authToken";
-import i18n from "@/i18n";
 
-const api = axios.create({
+ const api = axios.create({
   baseURL: "http://localhost:5273/api",
   headers: {
     "Content-Type": "application/json",
   },
-  withCredentials: true,
+  withCredentials: true, 
 });
 
 api.interceptors.request.use((config) => {
-  // Auth token
   const accessToken = getStoredAccessToken();
   if (accessToken) {
     config.headers.Authorization = `Bearer ${accessToken}`;
   }
-
-  // Tell the API which language to use for response messages
-  config.headers["Accept-Language"] = i18n.language ?? "en";
-
   return config;
 });
+
 
 api.interceptors.response.use(
   (response) => response,
   (error) => {
     const isRefreshRequest = error.config.url.includes("/Accounts/refreshToken");
+
     if (error.response?.status === 401 && !isRefreshRequest) {
       window.location.href = "/login";
     }
@@ -34,4 +30,4 @@ api.interceptors.response.use(
   }
 );
 
-export default api;
+export default api

@@ -1,5 +1,6 @@
 import type { AlertDto } from "@/Types";
 import { AlertTriangle, CheckCircle, Info, TrendingUp } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 const CONFIG = {
   warning: {
@@ -25,15 +26,20 @@ const CONFIG = {
 type SmartAlertsPanelProps = { alerts: AlertDto[] };
 
 export function SmartAlertsPanel({ alerts }: SmartAlertsPanelProps) {
+  const { t } = useTranslation();
+
   return (
     <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 flex flex-col">
-
       {/* Header */}
       <div className="flex items-center gap-2 mb-1">
         <TrendingUp className="w-4 h-4 text-gray-400" />
-        <h3 className="text-sm font-semibold text-gray-800">Smart alerts</h3>
+        <h3 className="text-sm font-semibold text-gray-800">
+          {t("dashboard.smartAlerts.title")}
+        </h3>
       </div>
-      <p className="text-xs text-gray-400 mb-4">Auto-detected spending signals</p>
+      <p className="text-xs text-gray-400 mb-4">
+        {t("dashboard.smartAlerts.subtitle")}
+      </p>
 
       {/* Empty state */}
       {alerts.length === 0 ? (
@@ -41,8 +47,12 @@ export function SmartAlertsPanel({ alerts }: SmartAlertsPanelProps) {
           <div className="w-9 h-9 rounded-full bg-emerald-50 flex items-center justify-center mb-2">
             <CheckCircle className="w-4 h-4 text-emerald-500" />
           </div>
-          <p className="text-sm font-medium text-gray-600">All clear</p>
-          <p className="text-xs text-gray-400 mt-0.5">No issues detected this month</p>
+          <p className="text-sm font-medium text-gray-600">
+            {t("dashboard.smartAlerts.allClear")}
+          </p>
+          <p className="text-xs text-gray-400 mt-0.5">
+            {t("dashboard.smartAlerts.noIssues")}
+          </p>
         </div>
       ) : (
         <div className="flex flex-col gap-2">
@@ -54,13 +64,14 @@ export function SmartAlertsPanel({ alerts }: SmartAlertsPanelProps) {
                 className={`flex items-start gap-3 px-3.5 py-3 rounded-xl border ${c.wrap}`}
               >
                 <c.Icon className={`w-3.5 h-3.5 shrink-0 mt-0.5 ${c.icon}`} />
-                <p className={`text-xs leading-relaxed ${c.msg}`}>{alert.message}</p>
+                <p className={`text-xs leading-relaxed ${c.msg}`}>
+                  {alert.message}
+                </p>
               </div>
             );
           })}
         </div>
       )}
-
     </div>
   );
 }

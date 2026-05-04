@@ -53,8 +53,10 @@ export const getExpenseApi = async (): Promise<ApiResponse<Expense[]>> => {
   const res = await api.get("/expense");
   return res.data;
 };
-export const deleteExpenseApi = async (id: number) => {
-  await api.delete(`/expenses/${id}`);
+
+export const deleteExpenseApi = async (id: number): Promise<ApiResponse<null>> => {
+  const res = await api.delete(`/Expense/${id}`);
+  return res.data;
 };
 // dashboard
 export const fetchDashboardData = async (): Promise<DashboardData> => {

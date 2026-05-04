@@ -19,6 +19,7 @@ import { Route as DashboardReportIndexRouteImport } from './routes/dashboard/rep
 import { Route as DashboardRecurringIndexRouteImport } from './routes/dashboard/recurring/index'
 import { Route as DashboardExpenseIndexRouteImport } from './routes/dashboard/expense/index'
 import { Route as DashboardCategoryIndexRouteImport } from './routes/dashboard/category/index'
+import { Route as DashboardAnalysisIndexRouteImport } from './routes/dashboard/analysis/index'
 import { Route as accountRegisterIndexRouteImport } from './routes/(account)/register/index'
 import { Route as accountLoginIndexRouteImport } from './routes/(account)/login/index'
 import { Route as DashboardUserProfileIndexRouteImport } from './routes/dashboard/user/profile/index'
@@ -73,6 +74,11 @@ const DashboardCategoryIndexRoute = DashboardCategoryIndexRouteImport.update({
   path: '/category/',
   getParentRoute: () => DashboardRouteRoute,
 } as any)
+const DashboardAnalysisIndexRoute = DashboardAnalysisIndexRouteImport.update({
+  id: '/analysis/',
+  path: '/analysis/',
+  getParentRoute: () => DashboardRouteRoute,
+} as any)
 const accountRegisterIndexRoute = accountRegisterIndexRouteImport.update({
   id: '/(account)/register/',
   path: '/register/',
@@ -98,6 +104,7 @@ export interface FileRoutesByFullPath {
   '/dashboard/': typeof DashboardIndexRoute
   '/login': typeof accountLoginIndexRoute
   '/register': typeof accountRegisterIndexRoute
+  '/dashboard/analysis': typeof DashboardAnalysisIndexRoute
   '/dashboard/category': typeof DashboardCategoryIndexRoute
   '/dashboard/expense': typeof DashboardExpenseIndexRoute
   '/dashboard/recurring': typeof DashboardRecurringIndexRoute
@@ -112,6 +119,7 @@ export interface FileRoutesByTo {
   '/dashboard': typeof DashboardIndexRoute
   '/login': typeof accountLoginIndexRoute
   '/register': typeof accountRegisterIndexRoute
+  '/dashboard/analysis': typeof DashboardAnalysisIndexRoute
   '/dashboard/category': typeof DashboardCategoryIndexRoute
   '/dashboard/expense': typeof DashboardExpenseIndexRoute
   '/dashboard/recurring': typeof DashboardRecurringIndexRoute
@@ -128,6 +136,7 @@ export interface FileRoutesById {
   '/dashboard/': typeof DashboardIndexRoute
   '/(account)/login/': typeof accountLoginIndexRoute
   '/(account)/register/': typeof accountRegisterIndexRoute
+  '/dashboard/analysis/': typeof DashboardAnalysisIndexRoute
   '/dashboard/category/': typeof DashboardCategoryIndexRoute
   '/dashboard/expense/': typeof DashboardExpenseIndexRoute
   '/dashboard/recurring/': typeof DashboardRecurringIndexRoute
@@ -145,6 +154,7 @@ export interface FileRouteTypes {
     | '/dashboard/'
     | '/login'
     | '/register'
+    | '/dashboard/analysis'
     | '/dashboard/category'
     | '/dashboard/expense'
     | '/dashboard/recurring'
@@ -159,6 +169,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/login'
     | '/register'
+    | '/dashboard/analysis'
     | '/dashboard/category'
     | '/dashboard/expense'
     | '/dashboard/recurring'
@@ -174,6 +185,7 @@ export interface FileRouteTypes {
     | '/dashboard/'
     | '/(account)/login/'
     | '/(account)/register/'
+    | '/dashboard/analysis/'
     | '/dashboard/category/'
     | '/dashboard/expense/'
     | '/dashboard/recurring/'
@@ -263,6 +275,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardCategoryIndexRouteImport
       parentRoute: typeof DashboardRouteRoute
     }
+    '/dashboard/analysis/': {
+      id: '/dashboard/analysis/'
+      path: '/analysis'
+      fullPath: '/dashboard/analysis'
+      preLoaderRoute: typeof DashboardAnalysisIndexRouteImport
+      parentRoute: typeof DashboardRouteRoute
+    }
     '/(account)/register/': {
       id: '/(account)/register/'
       path: '/register'
@@ -289,6 +308,7 @@ declare module '@tanstack/react-router' {
 
 interface DashboardRouteRouteChildren {
   DashboardIndexRoute: typeof DashboardIndexRoute
+  DashboardAnalysisIndexRoute: typeof DashboardAnalysisIndexRoute
   DashboardCategoryIndexRoute: typeof DashboardCategoryIndexRoute
   DashboardExpenseIndexRoute: typeof DashboardExpenseIndexRoute
   DashboardRecurringIndexRoute: typeof DashboardRecurringIndexRoute
@@ -299,6 +319,7 @@ interface DashboardRouteRouteChildren {
 
 const DashboardRouteRouteChildren: DashboardRouteRouteChildren = {
   DashboardIndexRoute: DashboardIndexRoute,
+  DashboardAnalysisIndexRoute: DashboardAnalysisIndexRoute,
   DashboardCategoryIndexRoute: DashboardCategoryIndexRoute,
   DashboardExpenseIndexRoute: DashboardExpenseIndexRoute,
   DashboardRecurringIndexRoute: DashboardRecurringIndexRoute,

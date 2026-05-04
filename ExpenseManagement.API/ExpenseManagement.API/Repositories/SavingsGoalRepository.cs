@@ -3,8 +3,10 @@ using ExpenseManagement.API.Data;
 using ExpenseManagement.API.DTOs.SavingsGoal;
 using ExpenseManagement.API.Hubs;
 using ExpenseManagement.API.Models;
+using ExpenseManagement.API.Resources;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Localization;
 
 namespace ExpenseManagement.API.Repositories
 {
@@ -12,11 +14,16 @@ namespace ExpenseManagement.API.Repositories
     {
         private readonly ApplicationDbContext _context;
         private readonly IHubContext<NotificationHub> _hubContext;
+        private readonly IStringLocalizer<SharedResource> _localizer;
 
-        public SavingsGoalRepository(ApplicationDbContext context, IHubContext<NotificationHub> hubContext)
+        public SavingsGoalRepository(
+            ApplicationDbContext context,
+            IHubContext<NotificationHub> hubContext,
+            IStringLocalizer<SharedResource> localizer)
         {
             _context = context;
             _hubContext = hubContext;
+            _localizer = localizer;
         }
 
         public async Task<IEnumerable<SavingsGoalDto>> GetAllGoals(string userId)
@@ -138,12 +145,14 @@ namespace ExpenseManagement.API.Repositories
             if (goal.Saved >= goal.Target)
             {
                 await _hubContext.Clients.User(userId).SendAsync("ReceiveNotification",
-                    $"🎉 Congratulations! You have reached your savings goal: {goal.Name}!");
+                    string.Format(_localizer["notif_goal_completed"], goal.Name));
             }
             else if (percentage >= 75)
             {
                 await _hubContext.Clients.User(userId).SendAsync("ReceiveNotification",
-                    $"🔔 You're {percentage:0}% of the way to your \"{goal.Name}\" goal — almost there!");
+                    string.Format(_localizer["notif_goal_progress"],
+                        $"{percentage:0}",
+                        goal.Name));
             }
         }
     }

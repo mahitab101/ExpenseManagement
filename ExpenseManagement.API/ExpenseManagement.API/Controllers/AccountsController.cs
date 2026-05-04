@@ -1,15 +1,16 @@
-﻿using DocumentFormat.OpenXml.InkML;
 using ExpenseManagement.API.Contracts;
 using ExpenseManagement.API.Data;
 using ExpenseManagement.API.DTOs.Account;
 using ExpenseManagement.API.Helpers;
 using ExpenseManagement.API.Models;
+using ExpenseManagement.API.Resources;
 using ExpenseManagement.API.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Localization;
 using System.Security.Claims;
 using System.Text;
 
@@ -24,7 +25,8 @@ namespace ExpenseManagement.API.Controllers
         private readonly IConfiguration _configuration;
         private readonly IEmailTemplateService _emailTemplate;
         private readonly IEmailService _emailService;
-        private readonly ApplicationDbContext _context; // ← add
+        private readonly ApplicationDbContext _context;
+        private readonly IStringLocalizer<SharedResource> _localizer;
 
         public AccountsController(
             IUserRepository userRepository,
@@ -32,14 +34,16 @@ namespace ExpenseManagement.API.Controllers
             IConfiguration configuration,
             IEmailTemplateService emailTemplate,
             IEmailService emailService,
-            ApplicationDbContext context) // ← add
+            ApplicationDbContext context,
+            IStringLocalizer<SharedResource> localizer)
         {
             _userRepository = userRepository;
-            _userManager = userManager;
-            _configuration = configuration;
-            _emailTemplate = emailTemplate;
-            _emailService = emailService;
-            _context = context; // ← add
+            _userManager    = userManager;
+            _configuration  = configuration;
+            _emailTemplate  = emailTemplate;
+            _emailService   = emailService;
+            _context        = context;
+            _localizer      = localizer;
         }
 
         [HttpPost("register")]
@@ -49,7 +53,7 @@ namespace ExpenseManagement.API.Controllers
             {
                 var errorResponse = new ApiResponse<object>(
                     false,
-                    "Invalid input data",
+                    _localizer["invalid_input"],
                     ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage)
                 );
                 return BadRequest(errorResponse);
@@ -68,22 +72,22 @@ namespace ExpenseManagement.API.Controllers
         {
             var user = await _userManager.FindByIdAsync(userId);
             if (user == null)
-                return BadRequest(new ApiResponse<object>(false, "User not found"));
+                return BadRequest(new ApiResponse<object>(false, _localizer["user_not_found"]));
 
             try
             {
                 var decodedBytes = WebEncoders.Base64UrlDecode(token);
                 var decodedToken = Encoding.UTF8.GetString(decodedBytes);
-                var result = await _userManager.ConfirmEmailAsync(user, decodedToken);
+                var result       = await _userManager.ConfirmEmailAsync(user, decodedToken);
 
                 if (!result.Succeeded)
-                    return BadRequest(new ApiResponse<object>(false, "Invalid token"));
+                    return BadRequest(new ApiResponse<object>(false, _localizer["invalid_token"]));
 
-                return Ok(new ApiResponse<object>(true, "Email confirmed successfully"));
+                return Ok(new ApiResponse<object>(true, _localizer["email_confirmed"]));
             }
             catch
             {
-                return BadRequest(new ApiResponse<object>(false, "Invalid or expired confirmation link"));
+                return BadRequest(new ApiResponse<object>(false, _localizer["invalid_confirmation_link"]));
             }
         }
 
@@ -92,26 +96,26 @@ namespace ExpenseManagement.API.Controllers
         {
             var user = await _userManager.FindByEmailAsync(request.Email);
             if (user == null)
-                return BadRequest(new ApiResponse<object>(false, "User not found"));
+                return BadRequest(new ApiResponse<object>(false, _localizer["user_not_found"]));
 
             if (await _userManager.IsEmailConfirmedAsync(user))
-                return BadRequest(new ApiResponse<object>(false, "Email already confirmed"));
+                return BadRequest(new ApiResponse<object>(false, _localizer["email_already_confirmed"]));
 
-            var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+            var token        = await _userManager.GenerateEmailConfirmationTokenAsync(user);
             var encodedToken = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(token));
-            var confirmationLink = $"{_configuration["FrontendBaseUrl"]}/confirm-email?userId={user.Id}&token={encodedToken}";
+            var confirmLink  = $"{_configuration["FrontendBaseUrl"]}/confirm-email?userId={user.Id}&token={encodedToken}";
 
             var templateValues = new Dictionary<string, string>
             {
-                { "UserName", $"{user.FirstName} {user.LastName}" },
-                { "ConfirmationLink", confirmationLink },
+                { "UserName",           $"{user.FirstName} {user.LastName}" },
+                { "ConfirmationLink",   confirmLink },
                 { "TokenExpiryMinutes", "15" }
             };
 
             string html = await _emailTemplate.LoadTemplateAsync("ConfirmEmailTemplate", templateValues);
             await _emailService.SendEmailAsync(user.Email!, "Confirm Your Email", html);
 
-            return Ok(new ApiResponse<object>(true, "Confirmation email sent successfully"));
+            return Ok(new ApiResponse<object>(true, _localizer["email_confirmation_sent"]));
         }
 
         [HttpPost("login")]
@@ -119,10 +123,9 @@ namespace ExpenseManagement.API.Controllers
         {
             var loggedInUser = await _userRepository.Login(loginDto.Email, loginDto.Password);
             if (loggedInUser == null)
-                return BadRequest(new ApiResponse<object>(false, "User Not Found."));
+                return BadRequest(new ApiResponse<object>(false, _localizer["user_not_found"]));
 
-            // ── Record session ─────────────────────────────────────────────
-            var userAgent = Request.Headers["User-Agent"].ToString();
+            var userAgent  = Request.Headers["User-Agent"].ToString();
             var (browser, os) = UserAgentParser.Parse(userAgent);
             var deviceType = UserAgentParser.GetDeviceType(userAgent);
 
@@ -130,7 +133,6 @@ namespace ExpenseManagement.API.Controllers
             if (Request.Headers.ContainsKey("X-Forwarded-For"))
                 ip = Request.Headers["X-Forwarded-For"].ToString().Split(',')[0].Trim();
 
-            // Deactivate old sessions for this user
             var oldSessions = await _context.UserSessions
                 .Where(s => s.UserId == loggedInUser.Id && s.IsActive)
                 .ToListAsync();
@@ -138,20 +140,19 @@ namespace ExpenseManagement.API.Controllers
 
             _context.UserSessions.Add(new UserSession
             {
-                UserId = loggedInUser.Id,
-                IpAddress = ip,
-                Browser = browser,
-                OS = os,
+                UserId     = loggedInUser.Id,
+                IpAddress  = ip,
+                Browser    = browser,
+                OS         = os,
                 DeviceInfo = deviceType,
-                LoginAt = DateTime.UtcNow,
-                IsActive = true,
+                LoginAt    = DateTime.UtcNow,
+                IsActive   = true,
             });
 
             await _context.SaveChangesAsync();
-            // ──────────────────────────────────────────────────────────────
 
             SetRefreshTokenInCookie(loggedInUser.RefreshToken, loggedInUser.ExpiresOn);
-            return Ok(new ApiResponse<UserDto>(true, "User LogedIn successfully.", loggedInUser));
+            return Ok(new ApiResponse<UserDto>(true, _localizer["user_logged_in"], loggedInUser));
         }
 
         [HttpPost("logout")]
@@ -159,13 +160,12 @@ namespace ExpenseManagement.API.Controllers
         {
             var refreshToken = Request.Cookies["refreshToken"];
             if (string.IsNullOrEmpty(refreshToken))
-                return BadRequest(new ApiResponse<object>(false, "No refresh token found."));
+                return BadRequest(new ApiResponse<object>(false, _localizer["no_refresh_token"]));
 
             var result = await _userRepository.Logout(refreshToken);
             if (!result)
-                return BadRequest(new ApiResponse<object>(false, "Logout failed or token already revoked."));
+                return BadRequest(new ApiResponse<object>(false, _localizer["logout_failed"]));
 
-            // ── Deactivate session ─────────────────────────────────────────
             var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             if (!string.IsNullOrEmpty(userId))
             {
@@ -175,22 +175,21 @@ namespace ExpenseManagement.API.Controllers
 
                 sessions.ForEach(s =>
                 {
-                    s.IsActive = false;
+                    s.IsActive     = false;
                     s.LastActiveAt = DateTime.UtcNow;
                 });
 
                 await _context.SaveChangesAsync();
             }
-            // ──────────────────────────────────────────────────────────────
 
             Response.Cookies.Delete("refreshToken", new CookieOptions
             {
-                HttpOnly = true,
-                Secure = true,
-                SameSite = SameSiteMode.None
+                HttpOnly  = true,
+                Secure    = true,
+                SameSite  = SameSiteMode.None
             });
 
-            return Ok(new ApiResponse<object>(true, "Logged out successfully."));
+            return Ok(new ApiResponse<object>(true, _localizer["user_logged_out"]));
         }
 
         [AllowAnonymous]
@@ -199,16 +198,16 @@ namespace ExpenseManagement.API.Controllers
         {
             var refreshToken = Request.Cookies["refreshToken"];
             if (string.IsNullOrEmpty(refreshToken))
-                return Unauthorized(new ApiResponse<object>(false, "No refresh token found."));
+                return Unauthorized(new ApiResponse<object>(false, _localizer["no_refresh_token"]));
 
             try
             {
                 var result = await _userRepository.RefreshToken(refreshToken);
                 if (result == null)
-                    return Unauthorized(new ApiResponse<object>(false, "Invalid session."));
+                    return Unauthorized(new ApiResponse<object>(false, _localizer["invalid_session"]));
 
                 SetRefreshTokenInCookie(result.RefreshToken, result.ExpiresOn);
-                return Ok(new ApiResponse<UserDto>(true, "Token refreshed successfully.", result));
+                return Ok(new ApiResponse<UserDto>(true, _localizer["token_refreshed"], result));
             }
             catch (InvalidOperationException ex)
             {
@@ -230,14 +229,8 @@ namespace ExpenseManagement.API.Controllers
                 .Take(10)
                 .Select(s => new
                 {
-                    s.Id,
-                    s.IpAddress,
-                    s.Browser,
-                    s.OS,
-                    s.DeviceInfo,
-                    s.LoginAt,
-                    s.LastActiveAt,
-                    s.IsActive,
+                    s.Id, s.IpAddress, s.Browser, s.OS,
+                    s.DeviceInfo, s.LoginAt, s.LastActiveAt, s.IsActive,
                 })
                 .ToListAsync();
 
@@ -246,16 +239,14 @@ namespace ExpenseManagement.API.Controllers
 
         private void SetRefreshTokenInCookie(string refreshToken, DateTime expires)
         {
-            var cookieOptions = new CookieOptions
+            Response.Cookies.Append("refreshToken", refreshToken, new CookieOptions
             {
-                HttpOnly = true,
-                Expires = expires.ToLocalTime(),
-                Secure = true,
+                HttpOnly  = true,
+                Expires   = expires.ToLocalTime(),
+                Secure    = true,
                 IsEssential = true,
-                SameSite = SameSiteMode.None
-            };
-
-            Response.Cookies.Append("refreshToken", refreshToken, cookieOptions);
+                SameSite  = SameSiteMode.None
+            });
         }
     }
 }

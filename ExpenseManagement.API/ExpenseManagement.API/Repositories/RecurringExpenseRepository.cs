@@ -3,8 +3,10 @@ using ExpenseManagement.API.Data;
 using ExpenseManagement.API.DTOs.RecurringExpense;
 using ExpenseManagement.API.Hubs;
 using ExpenseManagement.API.Models;
+using ExpenseManagement.API.Resources;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Localization;
 
 namespace ExpenseManagement.API.Repositories
 {
@@ -12,11 +14,16 @@ namespace ExpenseManagement.API.Repositories
     {
         private readonly ApplicationDbContext _context;
         private readonly IHubContext<NotificationHub> _hubContext;
+        private readonly IStringLocalizer<SharedResource> _localizer;
 
-        public RecurringExpenseRepository(ApplicationDbContext context, IHubContext<NotificationHub> hubContext)
+        public RecurringExpenseRepository(
+            ApplicationDbContext context,
+            IHubContext<NotificationHub> hubContext,
+            IStringLocalizer<SharedResource> localizer)
         {
             _context = context;
             _hubContext = hubContext;
+            _localizer = localizer;
         }
 
         // ── CRUD ──────────────────────────────────────────────────────────────
@@ -185,11 +192,13 @@ namespace ExpenseManagement.API.Repositories
 
                 // Notify via SignalR
                 await _hubContext.Clients.User(item.UserId).SendAsync("ReceiveNotification",
-                    $"🔄 Recurring expense added: {item.Title} — ${item.Amount:0.00}");
-            }
+                  string.Format(_localizer["notif_recurring_added"],
+                   item.Title,
+                   $"{item.Amount:0.00}"));
+                    }
 
-            if (dueItems.Any())
-                await _context.SaveChangesAsync();
+                if (dueItems.Any())
+                    await _context.SaveChangesAsync();
         }
 
         // ── NextDue calculator ────────────────────────────────────────────────
@@ -198,15 +207,15 @@ namespace ExpenseManagement.API.Repositories
         {
             return interval switch
             {
-                RecurrenceInterval.Daily   => from.AddDays(1),
-                RecurrenceInterval.Weekly  => from.AddDays(7),
+                RecurrenceInterval.Daily => from.AddDays(1),
+                RecurrenceInterval.Weekly => from.AddDays(7),
                 RecurrenceInterval.Monthly => new DateTime(
                     from.Year,
                     from.Month,
                     Math.Min(dayOfPeriod, DateTime.DaysInMonth(from.Year, from.Month))
                 ).AddMonths(1),
-                RecurrenceInterval.Yearly  => from.AddYears(1),
-                _                          => from.AddMonths(1)
+                RecurrenceInterval.Yearly => from.AddYears(1),
+                _ => from.AddMonths(1)
             };
         }
     }

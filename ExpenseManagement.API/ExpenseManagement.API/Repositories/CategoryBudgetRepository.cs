@@ -3,8 +3,10 @@ using ExpenseManagement.API.Data;
 using ExpenseManagement.API.DTOs.CategoryBudget;
 using ExpenseManagement.API.Hubs;
 using ExpenseManagement.API.Models;
+using ExpenseManagement.API.Resources;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Localization;
 
 namespace ExpenseManagement.API.Repositories
 {
@@ -12,13 +14,16 @@ namespace ExpenseManagement.API.Repositories
     {
         private readonly ApplicationDbContext _context;
         private readonly IHubContext<NotificationHub> _hubContext;
-
-        public CategoryBudgetRepository(ApplicationDbContext context, IHubContext<NotificationHub> hubContext)
+        private readonly IStringLocalizer<SharedResource> _localizer;
+        public CategoryBudgetRepository(
+              ApplicationDbContext context,
+              IHubContext<NotificationHub> hubContext,
+              IStringLocalizer<SharedResource> localizer)
         {
             _context = context;
             _hubContext = hubContext;
+            _localizer = localizer;
         }
-
         // ── Get monthly summary (all categories + their spend) ────────────────
 
         public async Task<MonthlySummaryDto> GetMonthlySummary(int month, int year, string userId)
@@ -221,12 +226,17 @@ namespace ExpenseManagement.API.Repositories
             if (totalSpent >= budget.Amount)
             {
                 await _hubContext.Clients.User(userId).SendAsync("ReceiveNotification",
-                    $"⚠️ Warning: You have exceeded the {new DateTime(year, month, 1):MMMM} budget for {budget.Category.CategoryName}!");
+                    string.Format(_localizer["notif_budget_exceeded"],
+                        new DateTime(year, month, 1).ToString("MMMM"),
+                        budget.Category.CategoryName));
             }
             else if (percentage >= 90)
             {
                 await _hubContext.Clients.User(userId).SendAsync("ReceiveNotification",
-                    $"🔔 You have used {percentage:0}% of your {new DateTime(year, month, 1):MMMM} budget for {budget.Category.CategoryName}.");
+                    string.Format(_localizer["notif_budget_warning"],
+                        $"{percentage:0}",
+                        new DateTime(year, month, 1).ToString("MMMM"),
+                        budget.Category.CategoryName));
             }
         }
     }

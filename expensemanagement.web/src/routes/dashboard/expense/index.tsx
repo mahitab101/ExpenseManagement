@@ -3,16 +3,16 @@ import TopCard from '@/components/expence/TopCard';
 import Heading from '@/components/ui/Heading';
 import Loader from '@/components/ui/Loader';
 import { useCategories } from '@/hooks/useCategories';
-import { useExpense } from '@/hooks/useExpense';
 import type { Expense, MonthlySummaryDto } from '@/Types';
 import { createFileRoute } from '@tanstack/react-router';
 import { Pencil, Trash2, Search, TrendingUp } from 'lucide-react';
 import { useState, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import toast from 'react-hot-toast';
-import { deleteExpenseApi, getMonthlySummary } from '@/api/expense';
+import { getMonthlySummary } from '@/api/expense';
 import MonthNavigator from '@/components/common/MonthNavigator';
+import { useExpenses } from '@/hooks/useExpenses';
 
 export const Route = createFileRoute('/dashboard/expense/')({
   component: ExpensePage,
@@ -118,14 +118,13 @@ function BudgetBanner({
 
 function ExpensePage() {
   const { t } = useTranslation();
-  const queryClient = useQueryClient();
 
   const [open, setOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState<Expense | null>(null);
   const [activeCategory, setActiveCategory] = useState('All');
   const [search, setSearch] = useState('');
 
-  const { expenses, isPending, error } = useExpense();
+  const {expenses,deleteExpense,error,isPending} = useExpenses();
   const { categories } = useCategories();
 
   const now = new Date();
@@ -153,31 +152,29 @@ function ExpensePage() {
     queryFn: () => getMonthlySummary(month, year),
   });
 
-  const deleteMutation = useMutation({
-    mutationFn: deleteExpenseApi,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['expenses'] });
-      toast.success('Expense deleted.');
-    },
-    onError: () => toast.error('Failed to delete expense.'),
-  });
+  
 
-  const handleDelete = (id: number) => {
-    toast((t) => (
-      <div className="flex flex-col gap-3">
-        <p className="text-sm font-medium">Delete this expense?</p>
-        <div className="flex justify-end gap-2">
-          <button onClick={() => toast.dismiss(t.id)} className="px-3 py-1 text-sm bg-gray-200 rounded-md">No</button>
-          <button
-            onClick={() => { deleteMutation.mutate(id); toast.dismiss(t.id); }}
-            className="px-3 py-1 text-sm bg-red-600 text-white rounded-md"
-          >
-            Yes
-          </button>
-        </div>
+const handleDelete = (id: number) => {
+  toast((toastInstance) => (
+    <div className="flex flex-col gap-3">
+      <p className="text-sm font-medium">{t("expense.deleteConfirm")}</p>
+      <div className="flex justify-end gap-2">
+        <button
+          onClick={() => toast.dismiss(toastInstance.id)}
+          className="px-3 py-1 text-sm bg-gray-200 rounded-md"
+        >
+          {t("common.no")}
+        </button>
+        <button
+          onClick={() => { deleteExpense(id); toast.dismiss(toastInstance.id); }}
+          className="px-3 py-1 text-sm bg-red-600 text-white rounded-md"
+        >
+          {t("common.yes")}
+        </button>
       </div>
-    ));
-  };
+    </div>
+  ));
+};
 
   const filteredExpenses = useMemo(() => {
     return (expenses ?? []).filter((exp) => {
@@ -192,7 +189,7 @@ function ExpensePage() {
   const totalAll = (expenses ?? []).reduce((sum, exp) => sum + exp.amount, 0);
   const monthlySpend = filteredExpenses.reduce((sum, exp) => sum + exp.amount, 0);
 
-  if (isPending) return <Loader />;
+if (isPending) return <Loader text="Loading expenses..." />;
   if (error) return <div className="bg-red-100 text-red-700 p-4 rounded-xl">{error.message}</div>;
 
   return (
@@ -356,7 +353,7 @@ function ExpensePage() {
                   className="p-2 rounded-lg bg-red-100 text-red-600 hover:bg-red-200 transition disabled:opacity-50"
                   title="Delete"
                   onClick={() => handleDelete(expense.id)}
-                  disabled={deleteMutation.isPending}
+                  disabled={isPending}
                 >
                   <Trash2 size={15} />
                 </button>

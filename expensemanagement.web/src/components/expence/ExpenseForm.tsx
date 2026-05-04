@@ -2,10 +2,9 @@ import type { CreateExpense, Expense } from "@/Types";
 import { useForm } from "react-hook-form";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
-import { useCreateExpense } from "@/hooks/useCreateExpense";
-import { useUpdateExpense } from "@/hooks/useUpdateExpense";
 import { useEffect, useState } from "react";
 import { useCategories } from "@/hooks/useCategories";
+import { useExpenses } from "@/hooks/useExpenses";
 
 type ExpenseFormProps = {
   onClose: () => void;
@@ -15,8 +14,7 @@ type ExpenseFormProps = {
 export default function ExpenseForm({ onClose, expense }: ExpenseFormProps) {
   const isEdit = !!expense;
 
-  const { createExpense, isPending: isCreating } = useCreateExpense();
-  const { updateExpense, isPending: isUpdating } = useUpdateExpense();
+  const { createExpense,  isCreating , updateExpense, isUpdating} = useExpenses();
   const { categories, isFetching } = useCategories();
 
   // track selected category to show its icon+color in the trigger

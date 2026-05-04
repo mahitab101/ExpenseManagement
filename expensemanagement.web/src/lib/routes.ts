@@ -7,5 +7,6 @@ export const ROUTES = {
   EXPENSES: "/dashboard/expense",
   CATEGORIES: "/dashboard/category",
   RECURRING: '/dashboard/recurring',
+  ANALYSIS: '/dashboard/analysis',
   SAVINGS: '/dashboard/savings'
 };

@@ -1,18 +1,25 @@
 import { ShoppingBag } from "lucide-react";
 import type { TopCategoryDto } from "@/Types";
+import { useTranslation } from "react-i18next";
 
 type Props = {
   categories: TopCategoryDto[];
 };
 
 export function TopSpendingCategories({ categories }: Props) {
+  const { t } = useTranslation();
+
   if (categories.length === 0) {
     return (
       <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
-        <p className="text-sm font-semibold text-gray-800 mb-1">Top spending categories</p>
+        <p className="text-sm font-semibold text-gray-800 mb-1">
+          {t("dashboard.topCategories.title")}
+        </p>
         <div className="flex flex-col items-center justify-center py-8 text-center">
           <ShoppingBag className="w-8 h-8 text-slate-300 mb-2" />
-          <p className="text-sm text-gray-400">No spending data yet</p>
+          <p className="text-sm text-gray-400">
+            {t("dashboard.topCategories.noData")}
+          </p>
         </div>
       </div>
     );
@@ -24,12 +31,19 @@ export function TopSpendingCategories({ categories }: Props) {
   return (
     <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
       <div className="flex items-center justify-between mb-1">
-        <h3 className="text-sm font-semibold text-gray-800">Top spending categories</h3>
+        <h3 className="text-sm font-semibold text-gray-800">
+          {t("dashboard.topCategories.title")}
+        </h3>
         <span className="text-xs text-gray-400">
-          Total: <span className="font-medium text-gray-600">${grandTotal.toLocaleString()}</span>
+          {t("dashboard.topCategories.total")}:{" "}
+          <span className="font-medium text-gray-600">
+            ${grandTotal.toLocaleString()}
+          </span>
         </span>
       </div>
-      <p className="text-xs text-gray-400 mb-5">This month's breakdown by category</p>
+      <p className="text-xs text-gray-400 mb-5">
+        {t("dashboard.topCategories.subtitle")}
+      </p>
 
       <div className="flex flex-col gap-4">
         {categories.map((cat) => {
@@ -39,9 +53,8 @@ export function TopSpendingCategories({ categories }: Props) {
             <div key={cat.categoryId}>
               <div className="flex items-center justify-between mb-1.5">
                 <div className="flex items-center gap-2">
-                  {/* Icon + color badge */}
                   <div
-                    className="w-6 h-6 rounded-lg flex items-center justify-center text-sm flex-shrink-0"
+                    className="w-6 h-6 rounded-lg flex items-center justify-center text-sm shrink-0"
                     style={{ backgroundColor: cat.color + "22" }}
                   >
                     {cat.icon}
@@ -55,7 +68,9 @@ export function TopSpendingCategories({ categories }: Props) {
                   >
                     {cat.categoryName}
                   </span>
-                  <span className="text-[10px] text-gray-400">{cat.count} txn</span>
+                  <span className="text-[10px] text-gray-400">
+                    {cat.count} {t("dashboard.topCategories.txn")}
+                  </span>
                 </div>
                 <div className="flex items-center gap-3">
                   <span className="text-xs text-gray-400">{cat.percentage}%</span>

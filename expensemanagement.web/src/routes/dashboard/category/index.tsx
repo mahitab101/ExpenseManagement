@@ -77,13 +77,14 @@ const categoriesThisMonth = (categories ?? []).filter(c => budgetMap.has(c.id));
     ));
   };
 
-// ✅ use API values directly
+// Monthly summary
 const totalBudget       = monthlySummary?.totalBudget ?? 0;
 const totalSpent        = monthlySummary?.totalSpent ?? 0;
 const allocated         = monthlySummary?.totalAllocatedToSavings ?? 0;
 const availableSurplus  = monthlySummary?.availableSurplus ?? 0;
 
-  if (isFetching) return <Loader />;
+
+  if (isFetching) return <Loader text="Loading categories..." />;
   if (error) return <div className="bg-red-300 text-red-900 p-4 rounded-xl">{error.message}</div>;
 
   return (
