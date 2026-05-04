@@ -96,10 +96,12 @@ export type CreateSavingsGoalDto = {
 // category budget
 
 
-export type CategoryBudgetDto = {
+export interface CategoryBudgetDto {
   id: number;
   categoryId: number;
   categoryName: string;
+  icon: string;
+  color: string;
   month: number;
   year: number;
   amount: number;
@@ -109,7 +111,8 @@ export type CategoryBudgetDto = {
   isOverBudget: boolean;
 };
 
-export type MonthlySummaryDto = {
+
+export interface MonthlySummaryDto  {
   month: number;
   year: number;
   totalBudget: number;
@@ -121,7 +124,7 @@ export type MonthlySummaryDto = {
   categories: CategoryBudgetDto[];
 };
 
-export type RecurringExpenseDto = {
+export interface RecurringExpenseDto {
   id: number;
   title: string;
   amount: number;
@@ -135,7 +138,7 @@ export type RecurringExpenseDto = {
   categoryName: string;
 };
 
-export type CreateRecurringExpenseDto = {
+export interface CreateRecurringExpenseDto {
   title: string;
   amount: number;
   interval: number; // 0=Daily,1=Weekly,2=Monthly,3=Yearly
@@ -156,7 +159,7 @@ export interface TopCategoryDto {
   icon: string;
 }
 
-export type AlertDto = {
+export interface AlertDto  {
   type: "warning" | "success" | "info" | "danger";
   message: string;
 };
@@ -190,7 +193,7 @@ export interface DashboardData {
 }
 
 
-export type UserSession = {
+export interface UserSession {
   id: number;
   ipAddress: string;
   browser: string;

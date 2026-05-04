@@ -79,10 +79,7 @@ function ReportPage() {
       {/* Header */}
       <div className="flex items-start justify-between mb-6 flex-wrap gap-4">
         <div>
-            <Heading HeadTitle={t("report.title")}  />
-          <p className="text-sm text-gray-400 mt-0.5">
-            {t("report.subtitle", { month: MONTH_NAMES[month - 1], year })}
-          </p>
+            <Heading HeadTitle={t("analytics.title")} SubTitle={t("analytics.subtitle", { month: MONTH_NAMES[month - 1], year })} />
         </div>
       </div>
 

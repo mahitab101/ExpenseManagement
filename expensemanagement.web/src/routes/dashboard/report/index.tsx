@@ -14,6 +14,8 @@ import { ExportButton } from "@/components/expence/ExportButton";
 import MonthNavigator from "@/components/common/MonthNavigator";
 import { useExpenses } from "@/hooks/useExpenses";
 import { t } from "i18next";
+import ReportKPIStrip from "@/components/report/ReportKPIStrip";
+import { fetchDashboardData } from "@/api/expense";
 
 export const Route = createFileRoute('/dashboard/report/')({
   component: ReportPage,
@@ -58,6 +60,10 @@ const {expenses} = useExpenses();
     queryKey: ['category-budgets', month, year],
     queryFn: () => getMonthlySummary(month, year),
   });
+  const { data: dashboard } = useQuery({
+  queryKey: ["dashboard"],
+  queryFn: fetchDashboardData,
+});
 
   // ── Filter expenses to selected month ─────────────────────────────────────
   const monthlyExpenses = (expenses || []).filter((exp) => {
@@ -79,14 +85,16 @@ const {expenses} = useExpenses();
 
   // ── Bar chart + budget cards: from monthly summary ────────────────────────
   // Falls back to expenses-only if no budget is set for the month
-  const budgetData = (monthlySummary?.categories ?? []).map((cat) => ({
-    category: cat.categoryName,
-    budget: cat.amount,          // monthly budget from CategoryBudget table
-    actual: cat.totalSpent,      // actual spend in this month
-    percent: cat.percentageUsed,
-    isOver: cat.isOverBudget,
-  }));
 
+const budgetData = (monthlySummary?.categories ?? []).map((cat) => ({
+  category: cat.categoryName,
+  icon:     cat.icon  ?? "",
+  color:    cat.color ?? "#64748b",
+  budget:   cat.amount,
+  actual:   cat.totalSpent,
+  percent:  cat.percentageUsed,
+  isOver:   cat.isOverBudget,
+}));
   // If no budgets set yet, still show actual spend with 0 budget
   const hasNoBudgets = budgetData.length === 0;
   const fallbackBudgetData = hasNoBudgets
@@ -99,6 +107,8 @@ const {expenses} = useExpenses();
         }, {})
       ).map(([category, actual]: any) => ({
         category,
+        icon:    "",   
+       color:   "#64748b", 
         budget: 0,
         actual,
         percent: 0,
@@ -164,83 +174,96 @@ const {expenses} = useExpenses();
   </div>
 </div>
 
-      {/* Monthly summary banner */}
-     {monthlySummary && monthlySummary.totalBudget > 0 && (
-  <div className="grid grid-cols-3 gap-4 mb-6">
-    {[
-      {
-        label: "Total budget",
-        value: monthlySummary.totalBudget,
-        color: "text-gray-800",
-      },
-      {
-        label: "Total spent",
-        value: monthlySummary.totalSpent,
-        color: monthlySummary.isOverBudget ? "text-red-500" : "text-gray-800",
-      },
-      {
-        label: monthlySummary.isOverBudget ? "Over budget" : "Remaining",
-        value: monthlySummary.isOverBudget
-          ? monthlySummary.totalSpent - monthlySummary.totalBudget
-          : monthlySummary.remaining,
-        color: monthlySummary.isOverBudget ? "text-red-500" : "text-emerald-600",
-      },
-    ].map((item, i) => (
-      <div key={i} className="bg-white rounded-2xl p-5 border border-slate-200">
-        <p className="text-xs font-medium uppercase tracking-wide text-gray-400 mb-2">
-          {item.label}
-        </p>
-        <p className={`text-2xl font-bold ${item.color}`}>
-          ${item.value.toLocaleString()}
-        </p>
-      </div>
-    ))}
-  </div>
-)}
-
+ 
+<ReportKPIStrip
+  monthlySummary={monthlySummary}
+  dashboard={dashboard}
+  month={month}
+  year={year}
+  monthlyExpenses={monthlyExpenses}
+/>
       {/* Budget cards — now from monthly summary */}
-      {displayData.length > 0 && (
-  <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-    {displayData.map((item, i) => (
-      <div key={i} className="bg-white rounded-2xl p-4 border border-slate-200">
-        <p className="text-xs font-medium text-gray-400 uppercase tracking-wide mb-1">
-          {item.category}
-        </p>
-        <p className="text-lg font-bold text-gray-800">
-          ${item.actual.toLocaleString()}
-          {item.budget > 0 && (
-            <span className="text-sm font-normal text-gray-400">
-              {" "}/ ${item.budget.toLocaleString()}
-            </span>
-          )}
-        </p>
+{displayData.length > 0 && (
+  <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 mt-6 mb-6 gap-3">
+    {displayData.map((item, i) => {
+      const barColor = item.isOver
+        ? "#ef4444"
+        : item.percent >= 80
+        ? "#f59e0b"
+        : item.color || "#42be85";
 
-        {item.budget > 0 && (
-          <>
-            <div className="w-full h-1.5 bg-slate-100 rounded-full overflow-hidden mt-3 mb-1">
-              <div
-                className="h-full rounded-full transition-all duration-500"
-                style={{
-                  width: `${Math.min(item.percent, 100)}%`,
-                  background:
-                    item.isOver ? "#EF4444"
-                    : item.percent >= 80 ? "#F59E0B"
-                    : "#42be85",
-                }}
-              />
+      return (
+        <div
+          key={i}
+          className="group relative bg-white rounded-2xl p-4 border border-slate-100
+                     shadow-sm hover:shadow-md transition-all duration-200 overflow-hidden"
+        >
+          {/* Color accent stripe on top */}
+          <div
+            className="absolute top-0 left-0 right-0 h-0.5 rounded-t-2xl"
+            style={{ background: item.color || "#e2e8f0" }}
+          />
+
+          {/* Header: icon + name */}
+          <div className="flex items-center gap-2.5 mb-3 mt-1">
+            <div
+              className="w-8 h-8 rounded-xl flex items-center justify-center text-base shrink-0"
+              style={{
+                backgroundColor: (item.color || "#64748b") + "18",
+                border: `1.5px solid ${(item.color || "#64748b")}30`,
+              }}
+            >
+              {item.icon || ""}
             </div>
-            <div className="flex items-center justify-between">
-              <p className="text-xs text-gray-400">{item.percent.toFixed(0)}% used</p>
-              {item.isOver && (
-                <span className="text-[10px] font-semibold text-red-500 bg-red-50 px-1.5 py-0.5 rounded-full">
-                  Over
-                </span>
-              )}
+            <p
+              className="text-[11px] font-bold uppercase tracking-wide truncate"
+              style={{ color: item.color || "#94a3b8" }}
+            >
+              {item.category}
+            </p>
+          </div>
+
+          {/* Amounts */}
+          <p className="text-xl font-black text-gray-800 leading-none">
+            ${item.actual.toLocaleString()}
+          </p>
+          {item.budget > 0 && (
+            <p className="text-xs text-gray-400 mt-0.5">
+              of ${item.budget.toLocaleString()} budget
+            </p>
+          )}
+
+          {/* Progress bar */}
+          {item.budget > 0 && (
+            <div className="mt-3">
+              <div className="w-full h-1.5 bg-slate-100 rounded-full overflow-hidden">
+                <div
+                  className="h-full rounded-full transition-all duration-700"
+                  style={{
+                    width: `${Math.min(item.percent, 100)}%`,
+                    background: barColor,
+                  }}
+                />
+              </div>
+              <div className="flex items-center justify-between mt-1.5">
+                <p className="text-[10px] text-gray-400 font-medium">
+                  {item.percent.toFixed(0)}% used
+                </p>
+                {item.isOver ? (
+                  <span className="text-[10px] font-bold text-red-500 bg-red-50 px-1.5 py-0.5 rounded-full">
+                    Over
+                  </span>
+                ) : item.percent >= 80 ? (
+                  <span className="text-[10px] font-bold text-amber-600 bg-amber-50 px-1.5 py-0.5 rounded-full">
+                    Near limit
+                  </span>
+                ) : null}
+              </div>
             </div>
-          </>
-        )}
-      </div>
-    ))}
+          )}
+        </div>
+      );
+    })}
   </div>
 )}
 
@@ -383,7 +406,7 @@ const {expenses} = useExpenses();
         <ul className="space-y-2.5">
           {section.items?.map((item, i) => (
             <li key={i} className="flex items-start gap-2">
-              <span className={`w-1.5 h-1.5 rounded-full mt-1.5 flex-shrink-0 ${section.dot}`} />
+              <span className={`w-1.5 h-1.5 rounded-full mt-1.5 shrink-0 ${section.dot}`} />
               <span className="text-xs text-gray-700 leading-relaxed">{item}</span>
             </li>
           ))}

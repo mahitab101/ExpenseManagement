@@ -289,5 +289,9 @@
     "october": "October",
     "november": "November",
     "december": "December"
+  },
+  "analytics": {
+    "title": "Analytics",
+    "subtitle": "Overview of your finances"
   }
 }

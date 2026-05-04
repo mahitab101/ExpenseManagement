@@ -5,6 +5,8 @@
         public int Id { get; set; }
         public int CategoryId { get; set; }
         public string CategoryName { get; set; } = string.Empty;
+        public string Icon { get; set; } = string.Empty;
+        public string Color { get; set; } = string.Empty;
         public int Month { get; set; }
         public int Year { get; set; }
         public decimal Amount { get; set; }
