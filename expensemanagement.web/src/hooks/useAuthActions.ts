@@ -1,5 +1,5 @@
-
 import {
+  confirmEmailApi,
   loginApi,
   logoutApi,
   registerApi,
@@ -24,58 +24,80 @@ export const useAuthActions = () => {
   const { mutate: login, isPending: isLoggingIn } = useMutation({
     mutationFn: loginApi,
     onSuccess: (res) => {
-      if (!res.success) { toast.error(res.message); return; }
+      if (!res.success) {
+        toast.error(res.message);
+        return;
+      }
       setAccessToken(res.data.token);
       setUser(res.data);
       toast.success(res.message);
     },
-    onError: (error: any) => toast.error(getErrorMessage(error, "Something went wrong")),
+    onError: (error: any) =>
+      toast.error(getErrorMessage(error, "Something went wrong")),
   });
 
   // ── Logout ─────────────────────────────────────────────────────────────
   const { mutate: logout, isPending: isLoggingOut } = useMutation({
     mutationFn: logoutApi,
     onSuccess: (res) => {
-      if (!res?.success) { toast.error(res?.message || "Logout failed"); return; }
+      if (!res?.success) {
+        toast.error(res?.message || "Logout failed");
+        return;
+      }
       setAccessToken(null);
       setUser(null);
       queryClient.clear();
       toast.success(res.message || "Logged out successfully");
       navigate({ to: "/login" });
     },
-    onError: (error: any) => toast.error(getErrorMessage(error, "Something went wrong")),
+    onError: (error: any) =>
+      toast.error(getErrorMessage(error, "Something went wrong")),
   });
 
   // ── Register ───────────────────────────────────────────────────────────
   const { mutate: register, isPending: isRegistering } = useMutation({
     mutationFn: registerApi,
     onSuccess: (res) => {
-      if (!res.success) { toast.error(res.message); return; }
+      if (!res.success) {
+        toast.error(res.message);
+        return;
+      }
       toast.success(res.message);
     },
-    onError: (error: any) => toast.error(getErrorMessage(error, "Something went wrong")),
+    onError: (error: any) =>
+      toast.error(getErrorMessage(error, "Something went wrong")),
   });
 
   // ── Confirm email ──────────────────────────────────────────────────────
-//   const { mutate: confirmEmail, isPending: isConfirmingEmail } = useMutation({
-//     mutationFn: confirmEmailApi,
-//     onSuccess: (res) => {
-//       if (!res.success) { toast.error(res.message); return; }
-//       toast.success(res.message);
-//     },
-//     onError: (error: any) =>
-//       toast.error(error.response?.data || error.message || "Confirmation failed"),
-//   });
+  const { mutate: confirmEmail, isPending: isConfirmingEmail } = useMutation({
+    mutationFn: confirmEmailApi,
+    onSuccess: (res) => {
+      if (!res.success) {
+        toast.error(res.message);
+        return;
+      }
+      toast.success(res.message);
+    },
+    onError: (error: any) =>
+      toast.error(
+        error.response?.data || error.message || "Confirmation failed",
+      ),
+  });
 
   // ── Send confirmation email ────────────────────────────────────────────
-  const { mutate: sendConfirmationEmail, isPending: isSendingEmail } = useMutation({
-    mutationFn: sendConfirmationEmailApi,
-    onSuccess: (res) => {
-      if (!res.success) { toast.error(res.message); return; }
-      toast.success(res.message || "Email sent successfully");
-    },
-    onError: (error: any) => toast.error(getErrorMessage(error, "Failed to send email")),
-  });
+  const { mutate: sendConfirmationEmail, isPending: isSendingEmail } =
+    useMutation({
+      mutationFn: sendConfirmationEmailApi,
+      onSuccess: (res) => {
+        if (!res.success) {
+          toast.error(res.message);
+          return;
+        }
+        toast.success(res.message || "Email sent successfully");
+      },
+      onError: (error: any) =>
+        toast.error(getErrorMessage(error, "Failed to send email")),
+    });
 
   return {
     // actions
@@ -83,10 +105,12 @@ export const useAuthActions = () => {
     logout,
     register,
     sendConfirmationEmail,
+    confirmEmail,
     // loading states
     isLoggingIn,
     isLoggingOut,
     isRegistering,
     isSendingEmail,
+    isConfirmingEmail,
   };
 };

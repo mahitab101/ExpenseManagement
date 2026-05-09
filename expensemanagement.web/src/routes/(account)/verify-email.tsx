@@ -1,8 +1,8 @@
-import { useSendConfirmationEmail } from "@/hooks/useSendConfirmationEmail";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { MailCheck } from "lucide-react";
+import { useAuthActions } from "@/hooks/useAuthActions";
 
 export const Route = createFileRoute("/(account)/verify-email")({
   validateSearch: (search: Record<string, unknown>) => ({
@@ -13,11 +13,11 @@ export const Route = createFileRoute("/(account)/verify-email")({
 
 function VerifyEmailPage() {
   const { email } = Route.useSearch();
-  const sendEmailMutation = useSendConfirmationEmail();
+  const { sendConfirmationEmail, isSendingEmail } = useAuthActions();
 
   useEffect(() => {
     if (email) {
-      sendEmailMutation.mutate(email);
+      sendConfirmationEmail(email);
     }
   }, [email]);
 
@@ -39,18 +39,21 @@ function VerifyEmailPage() {
 
           <p className="mt-3 max-w-md text-lg text-muted-foreground">
             We sent a confirmation link to{" "}
-            <span className="font-medium text-lime-700">{email || "your email"}</span>.
-            Please open your inbox and click the link to activate your account.
+            <span className="font-medium text-lime-700">
+              {email || "your email"}
+            </span>
+            . Please open your inbox and click the link to activate your
+            account.
           </p>
 
           <div className="mt-8 space-y-4">
             <Button
               type="button"
-              onClick={() => email && sendEmailMutation.mutate(email)}
-              disabled={sendEmailMutation.isPending || !email}
+              onClick={() => email && sendConfirmationEmail(email)}
+              disabled={isSendingEmail || !email}
               className="h-11 bg-lime-600 px-6 text-base hover:bg-lime-700"
             >
-              {sendEmailMutation.isPending ? "Sending..." : "Resend Email"}
+              {isSendingEmail ? "Sending..." : "Resend Email"}
             </Button>
 
             <p className="text-sm text-muted-foreground">
