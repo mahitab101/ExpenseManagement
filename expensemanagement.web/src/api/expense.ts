@@ -2,12 +2,9 @@ import api  from "@/service/axios";
 import type { ApiResponse, Category, CreateExpense, CreateRecurringExpenseDto, DashboardData, Expense, MonthlySummaryDto, RecurringExpenseDto } from "@/Types";
 
 export const createCategoryApi = async (
-  formData: Category
+  formData: Category & { initialBudget?: number; month?: number; year?: number }
 ): Promise<ApiResponse<Category>> => {
-  const res = await api.post("/category", {
-    ...formData
-  });
-
+  const res = await api.post("/category", formData);
   return res.data;
 };
 export const getCategoryApi = async (): Promise<ApiResponse<Category[]>> => {
@@ -63,8 +60,6 @@ export const fetchDashboardData = async (): Promise<DashboardData> => {
   const { data } = await api.get<DashboardData>("/Dashboard");
   return data;
 };
-// move me to seperate file
-
 
 // Get all
 export const getAllRecurringExpensesApi = async (): Promise<RecurringExpenseDto[]> => {

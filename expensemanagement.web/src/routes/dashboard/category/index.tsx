@@ -102,7 +102,7 @@ const availableSurplus  = monthlySummary?.availableSurplus ?? 0;
       </div>
 
       {open && (
-        <CategoryForm onClose={() => setOpen(false)} category={selectedCategory} />
+        <CategoryForm onClose={() => setOpen(false)} category={selectedCategory} month={month} year={year} />
       )}
 
       {/* Month navigator + summary */}

@@ -1,110 +1,3 @@
-// import type { Category } from "@/Types";
-// import { useForm } from "react-hook-form";
-// import { Input } from "../ui/input";
-// import { Label } from "../ui/label";
-// import { Button } from "../ui/button";
-// import { useCategories } from "@/hooks/useCategories";
-
-// type CategoryFormProps = {
-//   onClose: () => void;
-//   category?: Category | null;
-// };
-// export default function CategoryForm({ onClose, category }: CategoryFormProps) {
-//   // const { createCategory, isPending } = useCreateCategory();
-//   const isEdit = !!category;
-
-//  const {createCategory, updateCategory, isCreating,isUpdating,} = useCategories();
-
-//   const {
-//     register,
-//     handleSubmit,
-//     reset,
-//     formState: { errors },
-//   } = useForm<Category>({
-//     defaultValues: {
-//       categoryName: category?.categoryName || "",
-//       amount: category?.amount || 0,
-//       categoryDescription: category?.categoryDescription || "",
-//     },
-//   });
-
-//  const onSubmit = (data: Category) => {
-//   if (isEdit) {
-//     updateCategory(
-//       { ...category!, ...data }, 
-//       {
-//         onSuccess: () => {
-//           reset();
-//           onClose();
-//         },
-//       }
-//     );
-//   } else {
-//     createCategory(data, {
-//       onSuccess: () => {
-//         reset();
-//         onClose();
-//       },
-//     });
-//   }
-// };
-//   return (
-//     <div
-//       className="fixed inset-0 bg-black/40 flex items-center justify-center z-50"
-//       onClick={onClose}
-//     >
-//       <div
-//         className="bg-white rounded-xl p-6 w-full max-w-md"
-//         onClick={(e) => e.stopPropagation()}
-//       >
-//         <h2 className="text-lg font-semibold mb-4">
-//           {isEdit ? "Edit Category" : "Add Category"}
-//         </h2>
-
-//         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-
-//           <input
-//             {...register("categoryName", { required: "Required" })}
-//             placeholder="Category Name"
-//             className="w-full border px-4 py-2 rounded-lg"
-//           />
-//           <input
-//           type="number"
-//             {...register("amount", { required: "Required" })}
-//             placeholder="Amount"
-//             className="w-full border px-4 py-2 rounded-lg"
-//           />
-
-//           <input
-//             {...register("categoryDescription", { required: "Required" })}
-//             placeholder="Description"
-//             className="w-full border px-4 py-2 rounded-lg"
-//           />
-
-//           <div className="flex justify-end gap-2">
-//             <Button type="button" onClick={onClose} className="px-4 py-2 bg-gray-200 rounded-lg">
-//               Cancel
-//             </Button>
-
-//             <Button
-//               type="submit"
-//               className="px-4 py-2 bg-green-600 text-white rounded-lg"
-//               disabled={isCreating || isUpdating}
-//             >
-//               {isEdit
-//                 ? isUpdating
-//                   ? "Updating..."
-//                   : "Update"
-//                 : isCreating
-//                   ? "Creating..."
-//                   : "Create"}
-//             </Button>
-//           </div>
-//         </form>
-//       </div>
-//     </div>
-//   );
-// }
 
 import type { Category } from "@/Types";
 import { useForm } from "react-hook-form";
@@ -118,11 +11,14 @@ type CategoryFormInputs = {
   categoryDescription: string;
   icon: string;
   color: string;
+  initialBudget?: number;
 };
 
 type CategoryFormProps = {
   onClose: () => void;
   category?: Category | null;
+  month:number;
+  year:number
 };
 
 const ICONS = [
@@ -159,7 +55,7 @@ const COLORS = [
   "#F43F5E", // rose
 ];
 
-export default function CategoryForm({ onClose, category }: CategoryFormProps) {
+export default function CategoryForm({ onClose, category , month, year }: CategoryFormProps) {
   const isEdit = !!category;
   const { createCategory, updateCategory, isCreating, isUpdating } = useCategories();
 
@@ -179,7 +75,7 @@ export default function CategoryForm({ onClose, category }: CategoryFormProps) {
   });
 
   const onSubmit = (data: CategoryFormInputs) => {
-    const payload = { ...data, icon: selectedIcon, color: selectedColor };
+    const payload = { ...data, icon: selectedIcon, color: selectedColor, month, year };
     if (isEdit) {
       updateCategory(
         { ...category!, ...payload },
@@ -294,7 +190,21 @@ export default function CategoryForm({ onClose, category }: CategoryFormProps) {
               ))}
             </div>
           </div>
-
+{!isEdit && (
+  <div>
+    <label className="text-sm font-medium text-gray-700 mb-1 block">
+      Monthly Budget
+      <span className="text-gray-400 font-normal ml-1">(optional)</span>
+    </label>
+    <input
+      type="number"
+      min={0}
+      {...register("initialBudget", { min: 0 })}
+      placeholder="e.g. 500"
+      className="w-full border border-gray-200 px-4 py-2.5 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-200"
+    />
+  </div>
+)}
           {/* Actions */}
           <div className="flex justify-end gap-2 pt-1">
             <Button

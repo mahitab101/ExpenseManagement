@@ -31,7 +31,10 @@ export interface Category  {
   categoryName: string;
   categoryDescription: string;
   icon: string;  
-  color: string;  
+  color: string; 
+  initialBudget?: number; 
+  month?: number;         
+  year?: number; 
 };
 export interface CategoryList {
   Id: number;

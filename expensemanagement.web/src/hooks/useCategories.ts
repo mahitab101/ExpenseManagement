@@ -29,7 +29,7 @@ import toast from "react-hot-toast";
 export function useCategories() {
   const queryClient = useQueryClient();
 
-  // ── Query ──────────────────────────────────────────────────────────────
+  // Query
   const {
     data: categories,
     isPending: isFetching,
@@ -40,14 +40,14 @@ export function useCategories() {
     select: (res) => res.data,
   });
 
-  // ── Shared handlers ────────────────────────────────────────────────────
+  //  Shared handlers
   const invalidate = () =>
     queryClient.invalidateQueries({ queryKey: ["categories"] });
 
   const onError = (error: any) =>
     toast.error(error.response?.data?.message ?? "Something went wrong");
 
-  // ── Mutations ──────────────────────────────────────────────────────────
+  //  Mutations
   const { mutate: createCategory, isPending: isCreating } = useMutation({
     mutationFn: createCategoryApi,
     onSuccess: () => { toast.success("Category created successfully"); invalidate(); },
@@ -66,7 +66,7 @@ export function useCategories() {
     onError,
   });
 
-  // ── Derived state ──────────────────────────────────────────────────────
+  //  Derived state 
   const isPending = isFetching || isCreating || isUpdating || isDeleting;
 
   return {

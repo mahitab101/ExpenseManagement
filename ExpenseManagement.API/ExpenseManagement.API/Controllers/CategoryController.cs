@@ -1,6 +1,7 @@
 using AutoMapper;
 using ExpenseManagement.API.Contracts;
 using ExpenseManagement.API.DTOs.category;
+using ExpenseManagement.API.DTOs.CategoryBudget;
 using ExpenseManagement.API.Helper;
 using ExpenseManagement.API.Models;
 using ExpenseManagement.API.Resources;
@@ -16,15 +17,18 @@ namespace ExpenseManagement.API.Controllers
     public class CategoryController : ControllerBase
     {
         private readonly ICategoryRepository _categoryRepository;
+        private readonly ICategoryBudgetRepository _categoryBudgetRepository;
         private readonly IMapper _mapper;
         private readonly IStringLocalizer<SharedResource> _localizer;
 
         public CategoryController(
             ICategoryRepository categoryRepository,
+            ICategoryBudgetRepository categoryBudgetRepository,
             IMapper mapper,
             IStringLocalizer<SharedResource> localizer)
         {
             _categoryRepository = categoryRepository;
+            _categoryBudgetRepository = categoryBudgetRepository;
             _mapper             = mapper;
             _localizer          = localizer;
         }
@@ -60,14 +64,38 @@ namespace ExpenseManagement.API.Controllers
             if (userId == null)
                 return Unauthorized();
 
-            var category = _mapper.Map<Category>(createCategoryDto);
-            category.UserId = userId;
+            var category = new Category
+            {
+                CategoryName = createCategoryDto.CategoryName,
+                CategoryDescription = createCategoryDto.CategoryDescription,
+                Icon = createCategoryDto.Icon,
+                Color = createCategoryDto.Color,
+                UserId = userId
+            };
 
             var result = await _categoryRepository.AddAsync(category);
             if (!result)
                 return BadRequest(new ApiResponse<object>(false, _localizer["category_create_failed"], null));
 
-            var mapped = _mapper.Map<CategoryDto>(category);
+            if (createCategoryDto.InitialBudget.HasValue && createCategoryDto.InitialBudget > 0)
+            {
+                await _categoryBudgetRepository.SetBudget(new SetCategoryBudgetDto
+                {
+                    CategoryId = category.Id,
+                    Amount = createCategoryDto.InitialBudget ?? 0,
+                    Month = createCategoryDto.Month ?? DateTime.UtcNow.Month,
+                    Year = createCategoryDto.Year ?? DateTime.UtcNow.Year,
+                }, userId);
+            }
+
+            var mapped = new CategoryDto
+            {
+                Id = category.Id,
+                CategoryName = category.CategoryName,
+                CategoryDescription = category.CategoryDescription,
+                Icon = category.Icon,
+                Color = category.Color,
+            };
             return Ok(new ApiResponse<CategoryDto>(true, _localizer["category_created"], mapped));
         }
 
